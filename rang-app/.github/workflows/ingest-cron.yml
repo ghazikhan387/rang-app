@@ -1,0 +1,34 @@
+name: Rang Ingestion Pipeline Scheduler
+
+# Scheduled execution for Rang Healthcare news ingestion
+# Runs every 3 hours (free-tier safe, adheres to PRD §12.4 & §17 limits)
+on:
+  schedule:
+    - cron: '0 */3 * * *'  # Every 3 hours
+  workflow_dispatch:        # Allows manual trigger from GitHub UI
+
+jobs:
+  run-ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Trigger Supabase Ingest Edge Function
+        run: |
+          echo "Triggering Rang news ingestion pipeline..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            "${{ secrets.SUPABASE_URL }}/functions/v1/ingest" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET || secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -d '{"triggered_by": "github-actions-scheduler"}')
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "Response code: $HTTP_CODE"
+          echo "Response body: $BODY"
+
+          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+            echo "::error::Ingestion function failed with status $HTTP_CODE"
+            exit 1
+          fi
