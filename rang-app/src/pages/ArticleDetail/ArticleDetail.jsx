@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { MapPin, Hospital } from 'lucide-react';
-import { mockArticles } from '../../data/mockArticles';
+import { MapPin, Hospital, TriangleAlert, Copy, Check } from 'lucide-react';
 import { getArticleById } from '../../services/newsService';
 import { CATEGORIES } from '../../data/categories';
 import {
@@ -18,8 +17,10 @@ export default function ArticleDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [article, setArticle] = useState(() => mockArticles.find((a) => a.id === id) || null);
-  const [loading, setLoading] = useState(!article);
+  const [article, setArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [copyStatus, setCopyStatus] = useState('idle'); // idle | copied | error
   const CountryIcon = getCountryIcon(article?.country);
 
   // Scroll to top on mount or id change and fetch live article
@@ -27,10 +28,15 @@ export default function ArticleDetail() {
     window.scrollTo(0, 0);
     let isMounted = true;
     async function fetchArticle() {
+      setLoading(true);
+      setError(null);
+      setArticle(null);
       const res = await getArticleById(id);
       if (isMounted) {
         if (res.article) {
           setArticle(res.article);
+        } else if (res.error) {
+          setError(res.error);
         }
         setLoading(false);
       }
@@ -49,6 +55,32 @@ export default function ArticleDetail() {
   }
 
   if (!article) {
+    // A fetch-level failure (misconfiguration, DB error, network) must be
+    // clearly distinguished from a genuine "article doesn't exist".
+    if (error) {
+      return (
+        <div className="article-detail__not-found" role="alert" style={{ textAlign: 'center', padding: 'var(--space-24) var(--space-6)' }}>
+          <div style={{ display: 'inline-flex', width: '48px', height: '48px', borderRadius: '50%', background: '#FEE2E2', color: '#DC2626', alignItems: 'center', justifyContent: 'center', marginBottom: 'var(--space-4)' }}>
+            <TriangleAlert size={22} strokeWidth={2} />
+          </div>
+          <h2>Something is not right.</h2>
+          <p style={{ color: 'var(--color-text-secondary)', maxWidth: '560px', margin: '0 auto var(--space-4)' }}>
+            This article could not be loaded, so nothing is shown rather than demo content.
+          </p>
+          <pre style={{ textAlign: 'left', fontSize: '12px', lineHeight: 1.5, background: 'var(--color-bg, #F8FAFC)', border: '1px solid var(--color-border, #E2E8F0)', borderRadius: '8px', padding: '10px 12px', maxWidth: '560px', margin: '0 auto var(--space-6)', overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: 'var(--color-text-secondary)' }}>
+            {error}
+          </pre>
+          <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button type="button" className="article-detail__back" style={{ cursor: 'pointer' }} onClick={() => window.location.reload()}>
+              Try again
+            </button>
+            <Link to="/" className="article-detail__back">
+              Back to all news
+            </Link>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="article-detail__not-found">
         <h2>Article Not Found</h2>
@@ -69,6 +101,75 @@ export default function ArticleDetail() {
   const impactStatus = article.summary?.impact_status || 'unclear';
   const impactLabel = getImpactLabel(impactStatus);
   const impactBadgeClass = getImpactBadgeClass(impactStatus);
+
+  const buildArticleText = () => {
+    const lines = [];
+    lines.push(article.title);
+    lines.push(
+      `${article.source_name} · ${formatDate(article.published_at)} · ${getCountryName(article.country)} · ${categoryLabel}`
+    );
+    if (article.canonical_url) lines.push(article.canonical_url);
+    if (article.tags && article.tags.length > 0) {
+      lines.push(`Tags: ${article.tags.map((t) => `#${t}`).join(' ')}`);
+    }
+    lines.push('');
+    if (article.summary?.quick_summary) {
+      lines.push('EXECUTIVE SUMMARY');
+      lines.push(article.summary.quick_summary);
+      lines.push('');
+    }
+    if (article.summary?.recruiter_impact) {
+      lines.push(`RECRUITER & TALENT INTELLIGENCE (Impact: ${impactLabel})`);
+      lines.push(article.summary.recruiter_impact);
+      lines.push('');
+    }
+    if (article.summary?.why_it_matters) {
+      lines.push('WHY IT MATTERS');
+      lines.push(article.summary.why_it_matters);
+      lines.push('');
+    }
+    if (article.summary?.detailed_summary) {
+      lines.push('IN-DEPTH REPORTING');
+      lines.push(article.summary.detailed_summary);
+      lines.push('');
+    }
+    if (article.summary?.evidence_notes) {
+      lines.push(`Evidence: ${article.summary.evidence_notes}`);
+      lines.push('');
+    }
+    const sourceUrls = article.summary?.source_urls?.length
+      ? article.summary.source_urls
+      : (article.canonical_url ? [article.canonical_url] : []);
+    if (sourceUrls.length > 0) {
+      lines.push('SOURCES');
+      sourceUrls.forEach((url) => lines.push(`- ${url}`));
+    }
+    return lines.join('\n');
+  };
+
+  const handleCopyArticle = async () => {
+    const text = buildArticleText();
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for older browsers / non-secure contexts
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'absolute';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      setCopyStatus('copied');
+    } catch {
+      setCopyStatus('error');
+    }
+    window.setTimeout(() => setCopyStatus('idle'), 2000);
+  };
 
   return (
     <article className="article-detail" itemScope itemType="https://schema.org/NewsArticle">
@@ -128,7 +229,29 @@ export default function ArticleDetail() {
               <line x1="10" y1="14" x2="21" y2="3"></line>
             </svg>
           </a>
+          <span className="article-detail__dot"></span>
+          <button
+            type="button"
+            onClick={handleCopyArticle}
+            className="article-detail__copy-btn"
+            aria-live="polite"
+          >
+            {copyStatus === 'copied' ? (
+              <>
+                <Check size={12} strokeWidth={2.5} aria-hidden="true" /> Copied!
+              </>
+            ) : (
+              <>
+                <Copy size={12} strokeWidth={2.5} aria-hidden="true" /> Copy article
+              </>
+            )}
+          </button>
         </div>
+        {copyStatus === 'error' && (
+          <p role="alert" style={{ fontSize: 'var(--font-size-xs)', color: '#DC2626', marginTop: 'var(--space-2)' }}>
+            Copy failed — your browser blocked clipboard access. Select the text manually to copy.
+          </p>
+        )}
 
         {article.tags && article.tags.length > 0 && (
           <div className="article-detail__tags">

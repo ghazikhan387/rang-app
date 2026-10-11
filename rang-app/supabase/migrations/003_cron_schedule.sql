@@ -3,7 +3,7 @@
 -- (Optional / Supabase Cloud Pro or Self-Hosted with pg_cron enabled)
 -- ============================================================
 -- PRD §12.4: Recommended initial collection cadence
--- Run every 2 to 4 hours to remain comfortably within free tier allowances.
+-- Run every 2 hours to remain comfortably within free tier allowances.
 -- ============================================================
 
 -- 1. Enable required extensions for scheduled HTTP invocations
@@ -45,13 +45,13 @@ $$;
 comment on function public.trigger_ingestion_edge_function is
   'Invokes the Supabase ingest Edge Function via pg_net HTTP POST.';
 
--- 3. Schedule the ingestion job to run every 3 hours (PRD §12.4)
--- Minute 0 of every 3rd hour: 0 */3 * * *
+-- 3. Schedule the ingestion job to run every 2 hours (PRD §12.4)
+-- Minute 0 of every 2nd hour: 0 */2 * * *
 -- NOTE: Uncomment the line below after configuring app.settings or if using pg_cron in Supabase Dashboard.
--- select cron.schedule('rang-ingest-every-3h', '0 */3 * * *', 'select public.trigger_ingestion_edge_function()');
+-- select cron.schedule('rang-ingest-every-2h', '0 */2 * * *', 'select public.trigger_ingestion_edge_function()');
 
 -- To view active cron jobs:
 -- select * from cron.job;
 
 -- To unschedule:
--- select cron.unschedule('rang-ingest-every-3h');
+-- select cron.unschedule('rang-ingest-every-2h');

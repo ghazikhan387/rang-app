@@ -6,6 +6,7 @@ import Footer from './components/Footer/Footer';
 import HomePage from './pages/HomePage/HomePage';
 import ArticleDetail from './pages/ArticleDetail/ArticleDetail';
 import AboutPage from './pages/About/AboutPage';
+import Timeline from './pages/Timeline/Timeline';
 
 export default function App() {
   const [selectedCountry, setSelectedCountry] = useState('all');
@@ -29,6 +30,7 @@ export default function App() {
                 />
               }
             />
+            <Route path="/timeline" element={<Timeline />} />
             <Route path="/article/:id" element={<ArticleDetail />} />
             <Route path="/about" element={<AboutPage />} />
             {/* Fallback route */}

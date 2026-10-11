@@ -8,13 +8,13 @@
 // ============================================================
 export const PIPELINE_LIMITS = {
   /** Max RSS entries to process per source per run */
-  MAX_ENTRIES_PER_SOURCE: 20,
+  MAX_ENTRIES_PER_SOURCE: 30,
   /** Max new article candidates per entire run */
-  MAX_CANDIDATES_PER_RUN: 50,
+  MAX_CANDIDATES_PER_RUN: 150,
   /** Max AI summary calls per run */
-  MAX_AI_CALLS_PER_RUN: 15,
+  MAX_AI_CALLS_PER_RUN: 40,
   /** Max article age in days to consider for ingestion */
-  MAX_ARTICLE_AGE_DAYS: 14,
+  MAX_ARTICLE_AGE_DAYS: 21,
   /** Max retry count before marking as permanently failed */
   MAX_RETRY_COUNT: 3,
   /** Request timeout for fetching RSS feeds (ms) */
@@ -66,8 +66,8 @@ export type ImpactStatus = (typeof IMPACT_STATUSES)[number];
 // AI Model Configuration
 // ============================================================
 export const AI_CONFIG = {
-  /** Model identifier — Gemini 3.8 Flash (free tier) */
-  MODEL_NAME: "gemini-3.8-flash",
+  /** Model identifier — Gemini Flash Lite latest (100% reliable on Google free tier) */
+  MODEL_NAME: "gemini-flash-lite-latest",
   /** Max output tokens */
   MAX_OUTPUT_TOKENS: 4096,
   /** Temperature — low for factual accuracy */

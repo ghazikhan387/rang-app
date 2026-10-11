@@ -37,6 +37,7 @@ export interface AiSummaryOutput {
   tags: string[];
   country: string;
   regions: string[];
+  is_major: boolean;
 }
 
 // ============================================================
@@ -90,8 +91,10 @@ Respond with ONLY a valid JSON object (no markdown, no code fences) matching thi
   "primary_category": "one of the valid categories above",
   "tags": ["3-6 relevant keywords"],
   "country": "US | CA | OTHER",
-  "regions": ["relevant states/provinces if mentioned"]
-}`;
+  "regions": ["relevant states/provinces if mentioned"],
+  "is_major": false
+}
+NOTE on "is_major": Set to true ONLY if this article represents a milestone development (such as major federal healthcare policy/CMS rule finalization, antitrust/FTC enforcement, nationwide labor strikes, major health system bankruptcy or multibillion-dollar hospital mergers). For routine clinical findings, local hospital updates, or standard administrative news, set to false.`;
 }
 
 // ============================================================
@@ -144,10 +147,12 @@ export async function generateSummary(
   let attempts = 0;
   const maxAttempts = 3;
 
+  let currentUrl = url;
+
   while (attempts < maxAttempts) {
     attempts++;
     try {
-      response = await fetch(url, {
+      response = await fetch(currentUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -157,9 +162,10 @@ export async function generateSummary(
 
       if (response.status === 429 || response.status === 503) {
         console.warn(
-          `[ai-enrichment] Gemini ${response.status} on attempt ${attempts}/${maxAttempts}. Backing off ${attempts * 2000}ms...`
+          `[ai-enrichment] Gemini ${response.status} on attempt ${attempts}/${maxAttempts}. Falling back to flash-lite...`
         );
-        await new Promise((r) => setTimeout(r, attempts * 2000));
+        currentUrl = `${AI_CONFIG.GEMINI_API_BASE}/gemini-flash-lite-latest:generateContent?key=${apiKey}`;
+        await new Promise((r) => setTimeout(r, 1000));
         continue;
       }
 
@@ -170,7 +176,7 @@ export async function generateSummary(
       );
     } catch (fetchErr) {
       if (attempts >= maxAttempts) throw fetchErr;
-      await new Promise((r) => setTimeout(r, attempts * 2000));
+      await new Promise((r) => setTimeout(r, 1000));
     }
   }
 
@@ -246,6 +252,7 @@ function validateAndParseSummary(rawJson: string): AiSummaryOutput | null {
       tags: parsed.tags.slice(0, 8), // Cap tags
       country: parsed.country,
       regions: parsed.regions.slice(0, 5), // Cap regions
+      is_major: Boolean(parsed.is_major),
     };
   } catch (error) {
     console.error(

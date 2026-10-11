@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Newspaper } from 'lucide-react';
 import { CATEGORIES } from '../../data/categories';
-import { mockArticles } from '../../data/mockArticles';
 import { getPublishedArticles } from '../../services/newsService';
 import { truncateText } from '../../utils/helpers';
 import Ticker from '../Ticker/Ticker';
@@ -13,21 +12,25 @@ const FREE_LINE = 'Independently edited · Free to read';
 
 /**
  * Masthead — the print-style header above the site navigation.
- * Reuses the same published-article service as the feed (mock data is the
- * service's own fallback) so the teaser strip and ticker never render empty.
+ * Shows live teasers/ticker only when the feed loads. When the feed fails
+ * or is empty, these sections stay hidden — no mock content is rendered.
  * Presentation only: no new content, no new routes.
  */
 export default function Masthead() {
-  const [articles, setArticles] = useState(mockArticles);
+  const [articles, setArticles] = useState([]);
   const { pathname } = useLocation();
   const isHome = pathname === '/';
 
   useEffect(() => {
     let mounted = true;
     getPublishedArticles().then((res) => {
-      if (mounted && res.articles && res.articles.length > 0) {
+      if (mounted && !res.error && res.articles && res.articles.length > 0) {
         setArticles(res.articles);
       }
+      // On error/empty: intentionally leave teasers + ticker empty so a
+      // broken feed is visible as missing, not masked by demo headlines.
+    }).catch(() => {
+      // Leave empty — the main feed surfaces the actual error.
     });
     return () => {
       mounted = false;

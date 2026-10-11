@@ -1,35 +1,46 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { mockArticles } from '../../data/mockArticles';
 import { getPublishedArticles } from '../../services/newsService';
 import { isWithinRecency, formatRelativeTime, getCountryName } from '../../utils/helpers';
 import Hero from '../../components/Hero/Hero';
 import FilterBar from '../../components/FilterBar/FilterBar';
 import ArticleCard, { ArticleCardSkeleton } from '../../components/ArticleCard/ArticleCard';
-import { EmptyState } from '../../components/EmptyState/EmptyState';
+import { EmptyState, ErrorState } from '../../components/EmptyState/EmptyState';
 import './HomePage.css';
 
 export default function HomePage({ selectedCountry, onCountryChange }) {
-  const [articles, setArticles] = useState(mockArticles);
+  const [articles, setArticles] = useState([]);
   const [isLiveFeed, setIsLiveFeed] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedRecency, setSelectedRecency] = useState('latest');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const loadArticles = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    const res = await getPublishedArticles();
+    setArticles(res.articles || []);
+    setIsLiveFeed(res.isLive);
+    if (res.error) {
+      setError(res.error);
+    }
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
-    async function loadArticles() {
+    (async () => {
       setIsLoading(true);
+      setError(null);
       const res = await getPublishedArticles();
       if (isMounted) {
-        if (res.articles && res.articles.length > 0) {
-          setArticles(res.articles);
-        }
+        setArticles(res.articles || []);
         setIsLiveFeed(res.isLive);
+        if (res.error) setError(res.error);
         setIsLoading(false);
       }
-    }
-    loadArticles();
+    })();
     return () => { isMounted = false; };
   }, []);
 
@@ -126,10 +137,22 @@ export default function HomePage({ selectedCountry, onCountryChange }) {
                   <ArticleCardSkeleton key={i} />
                 ))}
               </div>
+            ) : error ? (
+              <ErrorState
+                message="The news feed could not be loaded, so no stories are shown."
+                details={error}
+                onRetry={loadArticles}
+              />
             ) : filteredArticles.length === 0 ? (
               <EmptyState
-                type={selectedCountry !== 'all' ? 'no-country' : 'no-results'}
-                onAction={clearAllFilters}
+                type={
+                  articles.length === 0
+                    ? 'no-stories'
+                    : selectedCountry !== 'all'
+                      ? 'no-country'
+                      : 'no-results'
+                }
+                onAction={articles.length === 0 ? undefined : clearAllFilters}
               />
             ) : (
               <div className="home-page__grid">
@@ -140,7 +163,7 @@ export default function HomePage({ selectedCountry, onCountryChange }) {
             )}
 
             {/* Ranked story list */}
-            {!isLoading && leadingStories.length > 0 && (
+            {!isLoading && !error && leadingStories.length > 0 && (
               <section className="home-page__leading" aria-labelledby="leading-heading">
                 <div className="section-head" data-month-label={monthLabel} data-section-index="02">
                   <h2 className="section-head__title" id="leading-heading">

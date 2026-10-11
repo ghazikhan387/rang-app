@@ -40,14 +40,35 @@ export function EmptyState({ type = 'no-results', onAction }) {
   );
 }
 
-export function ErrorState({ onRetry }) {
+export function ErrorState({ onRetry, message, details }) {
   return (
     <div className="error-state" role="alert">
       <div className="error-state__icon" aria-hidden="true"><TriangleAlert size={22} strokeWidth={2} /></div>
-      <h3 className="error-state__title">The feed couldn't refresh.</h3>
+      <h3 className="error-state__title">Something is not right.</h3>
       <p className="error-state__description">
-        Your previously loaded stories are still available. Try again in a moment.
+        {message || "The feed couldn't load. No demo content is shown so you don't mistake this for working data."}
       </p>
+      {details && (
+        <pre
+          style={{
+            textAlign: 'left',
+            fontSize: '12px',
+            lineHeight: 1.5,
+            background: 'var(--color-bg, #F8FAFC)',
+            border: '1px solid var(--color-border, #E2E8F0)',
+            borderRadius: '8px',
+            padding: '10px 12px',
+            maxWidth: '100%',
+            overflowX: 'auto',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            margin: '0 0 var(--space-6)',
+            color: 'var(--color-text-secondary)',
+          }}
+        >
+          {details}
+        </pre>
+      )}
       {onRetry && (
         <button className="error-state__action" onClick={onRetry}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>

@@ -19,6 +19,7 @@ export default function Footer() {
           <h3 className="footer__section-title">Navigation</h3>
           <div className="footer__links">
             <Link to="/" className="footer__link">News Feed</Link>
+            <Link to="/timeline" className="footer__link">Healthcare Timeline</Link>
             <Link to="/about" className="footer__link">About & Methodology</Link>
           </div>
         </div>

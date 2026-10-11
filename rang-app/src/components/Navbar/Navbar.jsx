@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, CalendarDays } from 'lucide-react';
 import { COUNTRIES } from '../../data/categories';
 import SearchModal from '../SearchModal/SearchModal';
 import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
@@ -63,6 +63,14 @@ export default function Navbar({ selectedCountry, onCountryChange }) {
               News
             </Link>
 
+            <Link
+              to="/timeline"
+              className={`navbar__link ${location.pathname === '/timeline' ? 'active' : ''}`}
+            >
+              <CalendarDays size={16} strokeWidth={2} aria-hidden="true" />
+              Timeline
+            </Link>
+
             <div className="navbar__country-pills" role="group" aria-label="Country filter">
               {COUNTRIES.map((c) => {
                 const CountryIcon = c.icon;
@@ -119,6 +127,9 @@ export default function Navbar({ selectedCountry, onCountryChange }) {
         <div className={`navbar__mobile-menu ${mobileOpen ? 'open' : ''}`}>
           <Link to="/" className={`navbar__link ${location.pathname === '/' ? 'active' : ''}`}>
             News
+          </Link>
+          <Link to="/timeline" className={`navbar__link ${location.pathname === '/timeline' ? 'active' : ''}`}>
+            Timeline
           </Link>
 
           {/* Full, labelled theme choice for phone-sized screens */}

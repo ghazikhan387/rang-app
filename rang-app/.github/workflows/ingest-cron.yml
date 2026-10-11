@@ -4,7 +4,7 @@ name: Rang Ingestion Pipeline Scheduler
 # Runs every 3 hours (free-tier safe, adheres to PRD §12.4 & §17 limits)
 on:
   schedule:
-    - cron: '0 */3 * * *'  # Every 3 hours
+    - cron: '0 */2 * * *'  # Every 2 hours
   workflow_dispatch:        # Allows manual trigger from GitHub UI
 
 jobs:

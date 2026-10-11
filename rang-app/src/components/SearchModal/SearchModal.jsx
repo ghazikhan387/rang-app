@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { mockArticles } from '../../data/mockArticles';
 import { getPublishedArticles } from '../../services/newsService';
 import { CATEGORIES } from '../../data/categories';
 import { formatRelativeTime, debounce } from '../../utils/helpers';
@@ -8,17 +7,25 @@ import './SearchModal.css';
 
 export default function SearchModal({ onClose }) {
   const [query, setQuery] = useState('');
-  const [articles, setArticles] = useState(mockArticles);
+  const [articles, setArticles] = useState([]);
+  const [searchError, setSearchError] = useState(null);
   const inputRef = useRef(null);
 
   useEffect(() => {
     inputRef.current?.focus();
-    // Load live articles if available
+    // Load live articles if available — no mock fallback, so a broken
+    // feed shows an explicit error instead of fake results.
     let isMounted = true;
     getPublishedArticles().then((res) => {
-      if (isMounted && res.articles && res.articles.length > 0) {
+      if (!isMounted) return;
+      if (res.error) {
+        setSearchError(res.error);
+        setArticles([]);
+      } else if (res.articles && res.articles.length > 0) {
         setArticles(res.articles);
       }
+    }).catch((err) => {
+      if (isMounted) setSearchError(err?.message || 'Search index could not be loaded.');
     });
 
     // Trap focus / close on outside click
@@ -69,6 +76,13 @@ export default function SearchModal({ onClose }) {
         </div>
 
         <div className="search-modal__results">
+          {searchError ? (
+            <div className="search-modal__empty" role="alert">
+              <p style={{ fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-2)' }}>Search is unavailable.</p>
+              <p style={{ fontSize: 'var(--font-size-sm)', wordBreak: 'break-word' }}>{searchError}</p>
+            </div>
+          ) : (
+            <>
           {query.trim() && results.length === 0 && (
             <div className="search-modal__empty">
               <p style={{ fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-2)' }}>No stories found</p>
@@ -92,6 +106,8 @@ export default function SearchModal({ onClose }) {
             <div className="search-modal__empty">
               <p>Start typing to search across articles, publishers, and topics.</p>
             </div>
+          )}
+            </>
           )}
         </div>
 

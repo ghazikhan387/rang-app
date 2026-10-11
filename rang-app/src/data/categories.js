@@ -63,3 +63,13 @@ export const IMPACT_STATUS = {
     description: 'No meaningful implication can be supported from the available evidence.',
   },
 };
+
+export const TIMELINE_RANGES = [
+  { id: 'week',    label: 'Past week',     description: 'Last 7 days' },
+  { id: 'month',   label: 'Past month',    description: 'Last 30 days (default)' },
+  { id: '3months', label: 'Past 3 months', description: 'Last 90 days' },
+  { id: '6months', label: 'Past 6 months', description: 'Last 180 days' },
+  { id: 'year',    label: 'Past year',     description: 'Last 365 days' },
+  { id: '3years',  label: 'Past 3 years',  description: 'Historical archive (2023–2026)' },
+];
+

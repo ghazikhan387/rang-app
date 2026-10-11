@@ -318,7 +318,25 @@ async function retrieveArticles(supabase: any, stats: RunStats) {
       const pageData = await retrieveArticlePage(article.canonical_url);
 
       if (!pageData) {
-        // Could not retrieve — keep as discovered, increment retry
+        // Page was paywalled, redirected, or protected against scraping.
+        // Fall back to the RSS snippet/description and title so Gemini can still enrich it
+        // rather than failing the candidate.
+        if (article.source_description || article.title) {
+          await supabase
+            .from("articles")
+            .update({
+              status: ARTICLE_STATUS.RETRIEVED,
+              retrieved_text: article.source_description || article.title,
+              retry_count: 0,
+              last_error: null,
+            })
+            .eq("id", article.id);
+
+          stats.articles_retrieved++;
+          continue;
+        }
+
+        // Genuinely missing metadata — increment retry or fail
         if (article.retry_count >= PIPELINE_LIMITS.MAX_RETRY_COUNT) {
           await supabase
             .from("articles")
@@ -349,7 +367,7 @@ async function retrieveArticles(supabase: any, stats: RunStats) {
         .from("articles")
         .update({
           status: ARTICLE_STATUS.RETRIEVED,
-          retrieved_text: pageData.bodyText || null,
+          retrieved_text: pageData.bodyText || article.source_description || null,
           source_description:
             pageData.description || article.source_description,
           image_url: pageData.imageUrl || article.image_url,
@@ -374,6 +392,12 @@ async function retrieveArticles(supabase: any, stats: RunStats) {
 // Step 3: ENRICH — Generate AI summaries for retrieved articles
 // ============================================================
 async function enrichArticles(supabase: any, stats: RunStats) {
+  // Reset any orphaned processing articles back to retrieved
+  await supabase
+    .from("articles")
+    .update({ status: ARTICLE_STATUS.RETRIEVED })
+    .eq("status", ARTICLE_STATUS.PROCESSING);
+
   // Get articles that are retrieved but not yet enriched
   const { data: articles, error } = await supabase
     .from("articles")
@@ -446,6 +470,7 @@ async function enrichArticles(supabase: any, stats: RunStats) {
           tags: summary.tags,
           country: summary.country,
           regions: summary.regions,
+          is_major: summary.is_major ?? false,
           status: ARTICLE_STATUS.PUBLISHED,
           retry_count: 0,
           last_error: null,
