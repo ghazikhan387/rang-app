@@ -9,8 +9,26 @@ export default function ArticleCard({ article }) {
     ? IMPACT_STATUS[article.summary.impact_status]
     : null;
 
+  /*
+    Decorative hooks: a few presentation-only data attributes so CSS can
+    render print-style details (the big date numeral in the Modern row
+    layout, the section label in Press) with pseudo-elements instead of
+    duplicating markup per theme.
+  */
+  const published = article.published_at ? new Date(article.published_at) : null;
+  const day = published ? String(published.getDate()).padStart(2, '0') : '--';
+  const month = published ? published.toLocaleDateString('en-US', { month: 'short' }).toUpperCase() : '';
+  const weekday = published ? published.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase() : '';
+
   return (
-    <article className="article-card">
+    <article
+      className="article-card"
+      data-day={day}
+      data-month={month}
+      data-weekday={weekday}
+      data-category={category?.label || article.primary_category}
+      data-source={article.source_name}
+    >
       {/* Image area */}
       <div className="article-card__image-wrapper">
         {article.image_url ? (

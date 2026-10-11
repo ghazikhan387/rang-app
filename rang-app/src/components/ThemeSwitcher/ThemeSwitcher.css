@@ -1,0 +1,202 @@
+/* ============================================================
+   ThemeSwitcher — structure & states
+   ------------------------------------------------------------
+   All colours/radius/type come from the theme tokens in
+   src/styles/theme.css (section 4 holds the per-theme flavour).
+   ============================================================ */
+
+.theme-switcher {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ---------- Segmented control (tablet & desktop) ---------- */
+
+.theme-switcher__segmented {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--t-switch-bg);
+  border: var(--t-switch-border);
+  border-radius: var(--t-switch-radius);
+}
+
+.theme-switcher__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  font-family: var(--t-font-meta);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t-switch-ink);
+  background: transparent;
+  border: 0;
+  border-radius: var(--t-switch-radius-inner);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--t-dur) var(--t-ease),
+    color var(--t-dur) var(--t-ease),
+    border-color var(--t-dur) var(--t-ease);
+}
+
+.theme-switcher__option:hover {
+  color: var(--t-switch-ink-strong);
+}
+
+.theme-switcher__option.is-active {
+  background: var(--t-switch-active-bg);
+  color: var(--t-switch-active-ink);
+}
+
+.theme-switcher__option:focus-visible {
+  outline: 2px solid var(--t-focus);
+  outline-offset: 2px;
+}
+
+.theme-switcher__option-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.theme-switcher__option-icon svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.theme-switcher__option-label {
+  display: inline-block;
+}
+
+/* ---------- Compact cycle button (mobile) ---------- */
+
+.theme-switcher__cycle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-family: var(--t-font-meta);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--t-switch-ink-strong);
+  background: var(--t-switch-bg);
+  border: var(--t-switch-border);
+  border-radius: var(--t-switch-radius);
+  cursor: pointer;
+  transition:
+    background-color var(--t-dur) var(--t-ease),
+    color var(--t-dur) var(--t-ease),
+    border-color var(--t-dur) var(--t-ease);
+}
+
+.theme-switcher__cycle:focus-visible {
+  outline: 2px solid var(--t-focus);
+  outline-offset: 2px;
+}
+
+.theme-switcher__cycle-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.theme-switcher__cycle-icon svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* "Theme: Parchment" — labels make the compact control self-explanatory */
+.theme-switcher__cycle-caption {
+  display: inline-block;
+  opacity: 0.7;
+}
+
+.theme-switcher__cycle-caption::after {
+  content: ':';
+  margin-right: 4px;
+}
+
+.theme-switcher__cycle-value {
+  display: inline-block;
+  color: var(--t-switch-ink-strong);
+}
+
+/*
+  Visibility rules, in cascade order. The principle: the control is ALWAYS a
+  labelled theme picker. It is never reduced to a bare glyph, because an
+  unlabelled pill reads as a status badge rather than something to click.
+*/
+
+/* Roomy viewports: the three named options */
+@media (min-width: 561px) {
+  .theme-switcher__segmented {
+    display: inline-flex;
+  }
+
+  .theme-switcher__cycle {
+    display: none;
+  }
+}
+
+/* 769–880px: the navigation links still claim this width, so the control
+   collapses to the single labelled button instead of dropping the names. */
+@media (min-width: 769px) and (max-width: 880px) {
+  .theme-switcher__segmented {
+    display: none;
+  }
+
+  .theme-switcher__cycle {
+    display: inline-flex;
+  }
+}
+
+/* Phones: one button that cycles Press → Parchment → Modern */
+@media (max-width: 560px) {
+  .theme-switcher__segmented {
+    display: none;
+  }
+
+  .theme-switcher__cycle {
+    display: inline-flex;
+  }
+}
+
+/* Very narrow phones: drop to "Theme" alone rather than clipping the row */
+@media (max-width: 340px) {
+  .theme-switcher__cycle-value {
+    display: none;
+  }
+}
+
+/* The in-menu variant always shows the labelled segmented control,
+   whatever the viewport width. */
+.theme-switcher--menu .theme-switcher__segmented {
+  display: inline-flex;
+}
+
+.theme-switcher--menu .theme-switcher__cycle {
+  display: none;
+}
+
+.theme-switcher--menu .theme-switcher__option {
+  flex: 1;
+  justify-content: center;
+  padding: 8px 10px;
+}

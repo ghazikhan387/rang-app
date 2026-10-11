@@ -1,0 +1,138 @@
+/* ============================================================
+   Ticker — structure
+   Theme colours/type via tokens; flavour lives in theme.css (3.1).
+   ============================================================ */
+
+.ticker {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  overflow: hidden;
+  background: var(--t-ticker-bg);
+  color: var(--t-ticker-ink);
+  border-top: var(--t-ticker-rule, 1px solid transparent);
+  border-bottom: var(--t-ticker-rule, 1px solid transparent);
+}
+
+.ticker__label {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px var(--space-4);
+  font-family: var(--t-font-meta);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: var(--t-ticker-label-bg);
+  color: var(--t-ticker-label-ink);
+  white-space: nowrap;
+}
+
+.ticker__mask {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  mask-image: linear-gradient(to right, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+}
+
+.ticker__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: ticker-scroll 52s linear infinite;
+}
+
+.ticker:hover .ticker__track,
+.ticker:focus-within .ticker__track {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker__run {
+  display: flex;
+  align-items: center;
+}
+
+.ticker__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: 8px var(--space-5);
+  font-family: var(--t-font-meta);
+  font-size: 12px;
+  color: var(--t-ticker-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--t-dur) var(--t-ease);
+}
+
+.ticker__item::after {
+  content: var(--t-ticker-separator, '·');
+  margin-left: var(--space-4);
+  color: var(--t-ticker-separator-ink, currentColor);
+  opacity: 0.6;
+}
+
+.ticker__item:hover {
+  color: var(--t-ticker-ink-hover, currentColor);
+  text-decoration: underline;
+}
+
+.ticker__time {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.75;
+}
+
+.ticker__headline {
+  font-weight: 400;
+}
+
+.ticker__source {
+  opacity: 0.7;
+}
+
+.ticker__source::before {
+  content: '— ';
+}
+
+/* Reduced motion: no marquee, no duplicated run — a static headline list */
+@media (prefers-reduced-motion: reduce) {
+  .ticker__track {
+    animation: none;
+    width: 100%;
+  }
+
+  .ticker__run {
+    flex-wrap: wrap;
+  }
+
+  .ticker__run[aria-hidden='true'] {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .ticker__item {
+    padding: 8px var(--space-3);
+  }
+
+  .ticker__run {
+    max-width: 100%;
+  }
+}

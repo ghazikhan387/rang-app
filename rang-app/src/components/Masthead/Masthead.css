@@ -1,0 +1,202 @@
+/* ============================================================
+   Masthead — structure
+   Colours, type and rules come from theme tokens; the per-theme
+   arrangements live in src/styles/theme.css (section 3.1).
+   ============================================================ */
+
+.masthead {
+  position: relative;
+  background: var(--t-paper);
+  color: var(--t-ink);
+  border-bottom: var(--t-masthead-bottom-rule);
+}
+
+/* ---------- thin info strip ---------- */
+
+.masthead__strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 8px var(--space-6);
+  font-family: var(--t-font-meta);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t-ink-3);
+}
+
+.masthead__strip-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.masthead__date {
+  text-align: center;
+}
+
+.masthead__price {
+  text-align: right;
+}
+
+/* ---------- wordmark plate ---------- */
+
+.masthead__plate {
+  position: relative;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-6) var(--space-4);
+  text-align: var(--t-masthead-align, center);
+}
+
+/* The brand mark itself — size is themed, colours never are (see the brand
+   mark invariant in theme.css). */
+.masthead__wordmark {
+  display: inline-block;
+  color: var(--t-ink);
+  text-decoration: none;
+}
+
+.masthead__logo {
+  height: var(--t-masthead-logo-h, clamp(2.5rem, 8vw, 5rem));
+  width: auto;
+  max-width: 100%;
+}
+
+.masthead__tagline {
+  margin-top: var(--space-2);
+  font-family: var(--t-font-meta);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--t-ink-2);
+}
+
+.masthead__stamp {
+  display: var(--t-stamp-display, none);
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-6);
+  padding: 6px 10px;
+  font-family: var(--t-font-meta);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--t-accent-ink);
+  border: 1px solid var(--t-accent-ink);
+  border-radius: var(--t-radius-xs);
+  transform: rotate(-3deg);
+}
+
+/* ---------- front-page teaser strip ---------- */
+
+.masthead__teasers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+.masthead__teaser {
+  padding: var(--space-4) 0;
+  border-top: var(--t-teaser-top-rule, 1px solid transparent);
+}
+
+.masthead__teaser-link {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: inherit;
+}
+
+.masthead__teaser-thumb {
+  flex-shrink: 0;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  background: var(--t-thumb-fill);
+  border: var(--t-thumb-border, 0);
+  color: var(--t-ink-2);
+}
+
+.masthead__teaser-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.masthead__teaser-kicker {
+  font-family: var(--t-font-meta);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t-accent-ink);
+}
+
+.masthead__teaser-headline {
+  font-family: var(--t-font-headline);
+  font-size: var(--font-size-sm);
+  font-weight: var(--t-headline-weight, 600);
+  line-height: 1.25;
+  color: var(--t-ink);
+}
+
+.masthead__teaser-link:hover .masthead__teaser-headline {
+  color: var(--t-accent-ink);
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 900px) {
+  .masthead__stamp {
+    display: none;
+  }
+
+  /* Teaser strip becomes a swipeable rail instead of shrinking to mush */
+  .masthead__teasers {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: var(--space-4);
+    padding-bottom: var(--space-2);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .masthead__teaser {
+    flex: 0 0 78%;
+    scroll-snap-align: start;
+    border-top: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .masthead__strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: 8px var(--space-4);
+  }
+
+  .masthead__date,
+  .masthead__price {
+    text-align: left;
+  }
+
+  .masthead__plate {
+    padding: var(--space-4) var(--space-4) var(--space-3);
+  }
+
+  .masthead__teasers {
+    padding: 0 var(--space-4);
+  }
+}

@@ -24,8 +24,12 @@
 }
 
 .footer__logo {
-  height: 32px;
+  /* The wordmark is a two-line lockup (aspect ≈ 2.86:1). 32px squashed the
+     'Healthcare' line into illegibility, so it gets a proper footer size. */
+  height: 48px;
   width: auto;
+  max-width: 100%;
+  align-self: flex-start;
 }
 
 .footer__tagline {
@@ -99,5 +103,9 @@
 @media (max-width: 480px) {
   .footer__inner {
     grid-template-columns: 1fr;
+  }
+
+  .footer__logo {
+    height: 42px;
   }
 }

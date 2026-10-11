@@ -70,6 +70,12 @@
   --max-width: 1280px;
   --content-width: 880px;
   --nav-height: 64px;
+
+  /* Presentation tokens that the three themes (src/styles/theme.css)
+     redefine: type roles, rules, image treatment, radii and the switcher.
+     The defaults here mirror the "modern" theme. */
+  --t-dur: 300ms;
+  --t-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ============================================================
@@ -128,6 +134,13 @@ button {
   cursor: pointer;
   border: none;
   background: none;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  color: inherit;
 }
 
 ul, ol { list-style: none; }

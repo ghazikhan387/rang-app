@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Masthead from './components/Masthead/Masthead';
 import Navbar from './components/Navbar/Navbar';
+import Newsletter from './components/Newsletter/Newsletter';
 import Footer from './components/Footer/Footer';
 import HomePage from './pages/HomePage/HomePage';
 import ArticleDetail from './pages/ArticleDetail/ArticleDetail';
@@ -12,6 +14,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="app-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Masthead />
         <Navbar
           selectedCountry={selectedCountry}
           onCountryChange={setSelectedCountry}
@@ -41,6 +44,7 @@ export default function App() {
             />
           </Routes>
         </div>
+        <Newsletter />
         <Footer />
       </div>
     </BrowserRouter>

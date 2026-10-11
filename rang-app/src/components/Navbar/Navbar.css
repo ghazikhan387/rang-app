@@ -121,6 +121,14 @@
   background: var(--color-teal-light);
 }
 
+/* Header actions: theme switcher + mobile menu toggle */
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
 /* Mobile menu */
 .navbar__mobile-toggle {
   display: none;
@@ -160,7 +168,10 @@
     transform: translateY(-100%);
     opacity: 0;
     pointer-events: none;
-    transition: transform var(--transition-slow), opacity var(--transition-slow);
+    /* visibility keeps the closed panel out of the tab order and the
+       accessibility tree instead of only fading it away */
+    visibility: hidden;
+    transition: transform var(--transition-slow), opacity var(--transition-slow), visibility var(--transition-slow);
     z-index: 99;
   }
 
@@ -168,6 +179,7 @@
     transform: translateY(0);
     opacity: 1;
     pointer-events: auto;
+    visibility: visible;
   }
 
   .navbar__mobile-menu .navbar__link {
@@ -177,5 +189,24 @@
 
   .navbar__mobile-menu .navbar__country-pills {
     margin-top: var(--space-2);
+  }
+
+  /* Labelled theme row inside the menu — always an explicit 3-way choice */
+  .navbar__mobile-theme {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .navbar__mobile-theme-label {
+    font-family: var(--t-font-meta);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
   }
 }

@@ -139,19 +139,27 @@ export default function ArticleDetail() {
         )}
       </header>
 
-      {/* Hero image or banner */}
-      {article.image_url ? (
-        <img
-          src={article.image_url}
-          alt={article.title}
-          className="article-detail__image"
-          itemProp="image"
-        />
-      ) : (
-        <div className="article-detail__image-placeholder" aria-hidden="true">
-          🏥
-        </div>
-      )}
+      {/* Hero image or banner, with a print-style caption line */}
+      <figure className="article-detail__figure">
+        {article.image_url ? (
+          <img
+            src={article.image_url}
+            alt={article.title}
+            className="article-detail__image"
+            itemProp="image"
+          />
+        ) : (
+          <div className="article-detail__image-placeholder" aria-hidden="true">
+            🏥
+          </div>
+        )}
+        <figcaption className="article-detail__caption">
+          {`“${article.title}”`} — {article.source_name}
+          {article.regions && article.regions.length > 0
+            ? ` · ${article.regions.join(', ')}`
+            : ` · ${getCountryName(article.country)}`}
+        </figcaption>
+      </figure>
 
       {/* Main Content Sections */}
       <div className="article-detail__content">
@@ -164,7 +172,11 @@ export default function ArticleDetail() {
               </svg>
               Executive Summary & Quick Take
             </h2>
-            <div className="article-detail__quick-take" itemProp="description">
+            <div
+              className="article-detail__quick-take"
+              itemProp="description"
+              data-pullquote="true"
+            >
               {article.summary.quick_summary}
             </div>
           </section>

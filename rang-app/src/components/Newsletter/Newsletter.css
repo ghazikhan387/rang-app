@@ -1,0 +1,181 @@
+/* ============================================================
+   Newsletter — structure
+   Theme colours/type via tokens; flavour lives in theme.css (3.8).
+   ============================================================ */
+
+.newsletter {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
+  gap: var(--space-8);
+  align-items: center;
+  max-width: var(--max-width);
+  margin: var(--space-12) auto 0;
+  padding: var(--space-8) var(--space-6);
+  background: var(--t-newsletter-bg);
+  color: var(--t-ink);
+  border: var(--t-newsletter-border, 0);
+}
+
+.newsletter__copy {
+  min-width: 0;
+}
+
+.newsletter__eyebrow {
+  font-family: var(--t-font-meta);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t-newsletter-eyebrow-ink);
+  margin-bottom: var(--space-2);
+}
+
+.newsletter__title {
+  font-family: var(--t-font-display);
+  font-weight: var(--t-display-weight, 400);
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: var(--t-display-tracking, -0.01em);
+  text-transform: var(--t-display-case, none);
+  color: var(--t-newsletter-ink);
+  margin-bottom: var(--space-3);
+}
+
+.newsletter__text {
+  font-family: var(--t-font-body);
+  font-size: var(--font-size-base);
+  line-height: 1.65;
+  color: var(--t-newsletter-ink-2);
+  max-width: 54ch;
+  margin-bottom: var(--space-5);
+}
+
+.newsletter__form {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+  max-width: 520px;
+}
+
+.newsletter__input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  font-family: var(--t-font-body);
+  font-size: var(--font-size-base);
+  color: var(--t-input-ink);
+  background: var(--t-input-bg);
+  border: var(--t-input-border);
+  border-radius: var(--t-radius-sm);
+  outline-offset: 2px;
+}
+
+.newsletter__input::placeholder {
+  color: var(--t-ink-3);
+}
+
+.newsletter__input:focus-visible {
+  outline: 2px solid var(--t-focus);
+}
+
+.newsletter__button {
+  flex-shrink: 0;
+  padding: 12px 22px;
+  font-family: var(--t-font-meta);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t-btn-primary-ink);
+  background: var(--t-btn-primary-bg);
+  border: var(--t-btn-border, 0);
+  border-radius: var(--t-radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--t-dur) var(--t-ease),
+    color var(--t-dur) var(--t-ease),
+    border-color var(--t-dur) var(--t-ease);
+}
+
+.newsletter__button:hover {
+  background: var(--t-btn-primary-bg-hover);
+  color: var(--t-btn-primary-ink-hover);
+}
+
+.newsletter__button:focus-visible {
+  outline: 2px solid var(--t-focus);
+  outline-offset: 2px;
+}
+
+.newsletter__confirmation {
+  font-family: var(--t-font-body);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--t-newsletter-ink);
+  padding: var(--space-3) var(--space-4);
+  border-left: 3px solid var(--t-newsletter-eyebrow-ink);
+  background: var(--t-newsletter-panel);
+  max-width: 54ch;
+}
+
+/* Decorative tall panel — the "portrait" beside the newsletter copy.
+   `max-width` is load-bearing: combined with `aspect-ratio` + `min-height`,
+   the intrinsic width can be derived FROM the ratio and then exceed the
+   card's content box (a 320px-wide phone produced a 320px panel in a 264px
+   box, i.e. a horizontal scrollbar). Clamping the width keeps the ratio
+   honest wherever there is room and harmless where there isn't. */
+.newsletter__art {
+  position: relative;
+  min-height: 260px;
+  aspect-ratio: 3 / 4;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--t-newsletter-art);
+  border-radius: var(--t-radius-sm);
+  overflow: hidden;
+}
+
+/* The real brand lockup, not a typographic stand-in. Its colours come from
+   the asset, never from the theme (see the brand mark invariant in
+   theme.css); where a theme's panel would swallow the charcoal half, the
+   mark gets a paper plate behind it instead of being recoloured. */
+.newsletter__art-mark {
+  display: block;
+  align-self: flex-start;
+  height: 34px;
+  width: auto;
+  max-width: 100%;
+}
+
+.newsletter__art-line {
+  display: block;
+  width: 56px;
+  height: 2px;
+  background: var(--t-newsletter-art-ink);
+}
+
+@media (max-width: 900px) {
+  .newsletter {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .newsletter__art {
+    min-height: 180px;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 520px) {
+  .newsletter__form {
+    flex-direction: column;
+  }
+
+  .newsletter__button {
+    padding: 12px 18px;
+  }
+}

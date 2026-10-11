@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { COUNTRIES } from '../../data/categories';
 import SearchModal from '../SearchModal/SearchModal';
+import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import './Navbar.css';
 
 export default function Navbar({ selectedCountry, onCountryChange }) {
@@ -34,6 +35,13 @@ export default function Navbar({ selectedCountry, onCountryChange }) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // The in-page search field (HomePage) asks us to open the same dialog
+  useEffect(() => {
+    const openSearch = () => setSearchOpen(true);
+    window.addEventListener('rang:open-search', openSearch);
+    return () => window.removeEventListener('rang:open-search', openSearch);
   }, []);
 
   return (
@@ -84,24 +92,37 @@ export default function Navbar({ selectedCountry, onCountryChange }) {
             </Link>
           </div>
 
-          <button
-            className="navbar__mobile-toggle"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-expanded={mobileOpen}
-            aria-label="Toggle navigation menu"
-          >
+          {/* Reader theme switcher — segmented on desktop, icon button on mobile */}
+          <div className="navbar__actions">
+            <ThemeSwitcher />
+
+            <button
+              className="navbar__mobile-toggle"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-expanded={mobileOpen}
+              aria-label="Toggle navigation menu"
+            >
             {mobileOpen ? (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             ) : (
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             )}
-          </button>
+            </button>
+          </div>
         </div>
 
         <div className={`navbar__mobile-menu ${mobileOpen ? 'open' : ''}`}>
           <Link to="/" className={`navbar__link ${location.pathname === '/' ? 'active' : ''}`}>
             News
           </Link>
+
+          {/* Full, labelled theme choice for phone-sized screens */}
+          <div className="navbar__mobile-theme">
+            <span className="navbar__mobile-theme-label" id="mobile-theme-label">
+              Reader theme
+            </span>
+            <ThemeSwitcher variant="menu" />
+          </div>
           <div className="navbar__country-pills" role="group" aria-label="Country filter">
             {COUNTRIES.map((c) => (
               <button
