@@ -6,6 +6,22 @@
   max-width: var(--content-width);
   margin: 0 auto;
   padding: var(--space-8) var(--space-6) var(--space-16);
+  animation: article-detail-enter 0.35s ease-out;
+}
+
+@keyframes article-detail-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-detail {
+    animation: none;
+  }
 }
 
 /* Breadcrumb */

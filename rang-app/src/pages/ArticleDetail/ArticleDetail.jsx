@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { MapPin, Hospital, TriangleAlert, Copy, Check } from 'lucide-react';
 import { getArticleById } from '../../services/newsService';
+import ArticleLoader from '../../components/ArticleLoader/ArticleLoader';
 import { CATEGORIES } from '../../data/categories';
 import {
   formatDate,
@@ -21,6 +22,9 @@ export default function ArticleDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copyStatus, setCopyStatus] = useState('idle'); // idle | copied | error
+  // Delayed loader appearance: avoids a flash on fast loads while still
+  // showing feedback for slower fetches.
+  const [showLoader, setShowLoader] = useState(false);
   const CountryIcon = getCountryIcon(article?.country);
 
   // Scroll to top on mount or id change and fetch live article
@@ -45,13 +49,23 @@ export default function ArticleDetail() {
     return () => { isMounted = false; };
   }, [id]);
 
+  // Reveal the loader only if the fetch takes longer than a beat —
+  // instant loads skip it entirely (no flashing).
+  useEffect(() => {
+    if (!loading) {
+      setShowLoader(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setShowLoader(true), 150);
+    return () => window.clearTimeout(timer);
+  }, [loading]);
+
   if (loading && !article) {
-    return (
-      <div className="article-detail__not-found" style={{ textAlign: 'center', padding: 'var(--space-24) 0' }}>
-        <div style={{ display: 'inline-block', width: '36px', height: '36px', border: '3px solid var(--color-border)', borderTopColor: 'var(--color-primary-500)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <p style={{ marginTop: 'var(--space-4)', color: 'var(--color-text-secondary)' }}>Loading healthcare intelligence brief...</p>
-      </div>
-    );
+    // Reserved space first (no layout shift), then the centered loader.
+    if (!showLoader) {
+      return <div className="article-loader__reserve" aria-hidden="true" />;
+    }
+    return <ArticleLoader />;
   }
 
   if (!article) {
