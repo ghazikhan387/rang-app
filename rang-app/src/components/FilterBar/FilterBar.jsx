@@ -68,7 +68,9 @@ export default function FilterBar({
 
         {categoryOpen && (
           <div className="filter-bar__dropdown" role="listbox" aria-label="Category filter">
-            {CATEGORIES.map((cat) => (
+            {CATEGORIES.map((cat) => {
+              const CatIcon = cat.icon;
+              return (
               <button
                 key={cat.id}
                 className={`filter-bar__dropdown-item ${selectedCategories.includes(cat.id) ? 'active' : ''}`}
@@ -76,13 +78,16 @@ export default function FilterBar({
                 role="option"
                 aria-selected={selectedCategories.includes(cat.id)}
               >
-                <span className="filter-bar__dropdown-item-icon">{cat.icon}</span>
+                <span className="filter-bar__dropdown-item-icon" aria-hidden="true">
+                  {CatIcon && <CatIcon size={15} strokeWidth={2} />}
+                </span>
                 <span>{cat.label}</span>
                 {selectedCategories.includes(cat.id) && (
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: 'auto' }}><polyline points="20 6 9 17 4 12"/></svg>
                 )}
               </button>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

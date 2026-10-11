@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { ShieldCheck } from 'lucide-react';
 import './AboutPage.css';
 
 export default function AboutPage() {
@@ -12,7 +13,7 @@ export default function AboutPage() {
       {/* Hero section */}
       <div className="about-page__hero">
         <div className="about-page__badge">
-          <span>🛡️</span>
+          <ShieldCheck size={14} strokeWidth={2} aria-hidden="true" />
           <span>Methodology & Standards</span>
         </div>
         <h1 className="about-page__title">

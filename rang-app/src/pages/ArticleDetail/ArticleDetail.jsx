@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { MapPin, Hospital } from 'lucide-react';
 import { mockArticles } from '../../data/mockArticles';
 import { getArticleById } from '../../services/newsService';
 import { CATEGORIES } from '../../data/categories';
@@ -7,7 +8,7 @@ import {
   formatDate,
   formatRelativeTime,
   getCountryName,
-  getCountryFlag,
+  getCountryIcon,
   getImpactBadgeClass,
   getImpactLabel
 } from '../../utils/helpers';
@@ -19,6 +20,7 @@ export default function ArticleDetail() {
 
   const [article, setArticle] = useState(() => mockArticles.find((a) => a.id === id) || null);
   const [loading, setLoading] = useState(!article);
+  const CountryIcon = getCountryIcon(article?.country);
 
   // Scroll to top on mount or id change and fetch live article
   useEffect(() => {
@@ -85,7 +87,7 @@ export default function ArticleDetail() {
       <header className="article-detail__header">
         <div className="article-detail__meta-row">
           <span className="article-detail__badge">
-            <span>{getCountryFlag(article.country)}</span>
+            <CountryIcon size={12} strokeWidth={2} aria-hidden="true" />
             <span>{getCountryName(article.country)}</span>
           </span>
 
@@ -95,7 +97,7 @@ export default function ArticleDetail() {
 
           {article.regions && article.regions.length > 0 && (
             <span className="article-detail__badge" style={{ background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
-              📍 {article.regions.join(', ')}
+              <MapPin size={12} strokeWidth={2} aria-hidden="true" /> {article.regions.join(', ')}
             </span>
           )}
         </div>
@@ -150,7 +152,7 @@ export default function ArticleDetail() {
           />
         ) : (
           <div className="article-detail__image-placeholder" aria-hidden="true">
-            🏥
+            <Hospital size={56} strokeWidth={1.5} />
           </div>
         )}
         <figcaption className="article-detail__caption">

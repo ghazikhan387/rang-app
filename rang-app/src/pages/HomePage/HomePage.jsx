@@ -2,7 +2,6 @@ import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { mockArticles } from '../../data/mockArticles';
 import { getPublishedArticles } from '../../services/newsService';
-import { CATEGORIES } from '../../data/categories';
 import { isWithinRecency, formatRelativeTime, getCountryName } from '../../utils/helpers';
 import Hero from '../../components/Hero/Hero';
 import FilterBar from '../../components/FilterBar/FilterBar';
@@ -59,17 +58,7 @@ export default function HomePage({ selectedCountry, onCountryChange }) {
     onCountryChange('all');
   };
 
-  // Top 5 articles for sidebar
-  const trendingArticles = articles
-    .filter((a) => a.summary?.impact_status === 'confirmed')
-    .slice(0, 5);
-
-  /* Presentation-only collections derived from the same data */
-  const newestFirst = useMemo(
-    () => [...articles].sort((a, b) => new Date(b.published_at) - new Date(a.published_at)),
-    [articles]
-  );
-  const dailyFeed = newestFirst.slice(0, 4);
+  /* Presentation-only collection derived from the same data */
   const leadingStories = useMemo(
     () =>
       [...articles]
@@ -82,16 +71,6 @@ export default function HomePage({ selectedCountry, onCountryChange }) {
         .slice(0, 5),
     [articles]
   );
-
-  /* The "confirmed developments" module is only rendered when the feed
-     actually contains confirmed developments; the print-style index numbers
-     are derived from what is rendered so they never skip. */
-  const showTrending = trendingArticles.length > 0;
-  const moduleIndex = {
-    daily: '01',
-    trending: showTrending ? '02' : null,
-    categories: showTrending ? '03' : '02',
-  };
 
   /* Date tab / section label used by the themed section heading (CSS ::before) */
   const monthLabel = new Date()
@@ -139,10 +118,8 @@ export default function HomePage({ selectedCountry, onCountryChange }) {
           hasActiveFilters={hasActiveFilters}
         />
 
-        {/* Layout: feed + sidebar */}
-        <div className="home-page__layout">
-          {/* Main feed */}
-          <div>
+        {/* Main feed */}
+        <div>
             {isLoading ? (
               <div className="home-page__grid">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -192,93 +169,6 @@ export default function HomePage({ selectedCountry, onCountryChange }) {
               </section>
             )}
           </div>
-
-          {/* Sidebar */}
-          <aside className="home-page__sidebar" aria-label="Sidebar">
-            {/* Daily feed */}
-            <div className="sidebar-card sidebar-daily">
-              <h3 className="sidebar-card__title" data-index={moduleIndex.daily}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Daily Feed
-                <span className="sidebar-card__index" aria-hidden="true">{moduleIndex.daily}</span>
-              </h3>
-              <div className="sidebar-card__list">
-                {dailyFeed.map((a) => (
-                  <div key={a.id} className="sidebar-card__item daily-feed__item">
-                    <time className="daily-feed__time" dateTime={a.published_at}>
-                      {new Date(a.published_at).toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: false,
-                      })}
-                    </time>
-                    <div>
-                      <Link to={`/article/${a.id}`} className="sidebar-card__item-title">
-                        {a.title}
-                      </Link>
-                      <div className="sidebar-card__item-meta">
-                        {getCountryName(a.country)} · {a.source_name}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Trending */}
-            {showTrending && (
-            <div className="sidebar-card" data-index={moduleIndex.trending}>
-              <h3 className="sidebar-card__title" data-index={moduleIndex.trending}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                Confirmed Developments
-                <span className="sidebar-card__index" aria-hidden="true">{moduleIndex.trending}</span>
-              </h3>
-              <div className="sidebar-card__list">
-                {trendingArticles.map((a, i) => (
-                  <div key={a.id} className="sidebar-card__item">
-                    <span className="sidebar-card__rank">{i + 1}</span>
-                    <div>
-                      <Link to={`/article/${a.id}`} className="sidebar-card__item-title">
-                        {a.title}
-                      </Link>
-                      <div className="sidebar-card__item-meta">
-                        {a.source_name} · {formatRelativeTime(a.published_at)}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            )}
-
-            {/* Category shortcuts */}
-            <div className="sidebar-card sidebar-categories" data-index={moduleIndex.categories}>
-              <h3 className="sidebar-card__title" data-index={moduleIndex.categories}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-purple)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                Categories
-                <span className="sidebar-card__index" aria-hidden="true">{moduleIndex.categories}</span>
-              </h3>
-              <div className="sidebar-card__list">
-                {CATEGORIES.filter(c => c.id !== 'other').slice(0, 8).map((cat) => {
-                  const count = mockArticles.filter((a) => a.primary_category === cat.id).length;
-                  return (
-                    <button
-                      key={cat.id}
-                      className="sidebar-category-link"
-                      onClick={() => setSelectedCategories([cat.id])}
-                    >
-                      <span>{cat.icon}</span>
-                      <span style={{ flex: 1 }}>{cat.label}</span>
-                      <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-muted)' }}>
-                        {count}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </aside>
-        </div>
       </div>
     </main>
   );

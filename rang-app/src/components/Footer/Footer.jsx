@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { MapPin } from 'lucide-react';
 import './Footer.css';
 
 export default function Footer() {
@@ -25,8 +26,8 @@ export default function Footer() {
         <div>
           <h3 className="footer__section-title">Coverage</h3>
           <div className="footer__links">
-            <span className="footer__link">🇺🇸 United States</span>
-            <span className="footer__link">🇨🇦 Canada</span>
+            <span className="footer__link"><MapPin size={13} strokeWidth={2} aria-hidden="true" /> United States</span>
+            <span className="footer__link"><MapPin size={13} strokeWidth={2} aria-hidden="true" /> Canada</span>
           </div>
         </div>
 

@@ -140,7 +140,9 @@
 .filter-bar__dropdown-item-icon {
   flex-shrink: 0;
   width: 20px;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .filter-bar__active-count {

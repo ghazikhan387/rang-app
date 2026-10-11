@@ -1,26 +1,43 @@
 /**
  * Rang Healthcare — News categories
  * Single source of truth for all category definitions.
+ *
+ * Icons are Lucide React components (no emojis) so every theme renders
+ * crisp, professional glyphs that inherit the surrounding text color.
  */
+import {
+  Hospital,
+  Users,
+  Pill,
+  ClipboardList,
+  ShieldCheck,
+  CircleDollarSign,
+  Globe,
+  Bot,
+  Microscope,
+  Handshake,
+  Newspaper,
+  MapPin,
+} from 'lucide-react';
 
 export const CATEGORIES = [
-  { id: 'hospitals',      label: 'Hospitals & Health Systems',       icon: '🏥' },
-  { id: 'workforce',      label: 'Healthcare Workforce & Staffing',  icon: '👥' },
-  { id: 'nursing',        label: 'Nursing & Clinical Workforce',     icon: '💊' },
-  { id: 'policy',         label: 'Healthcare Policy & Regulation',   icon: '📋' },
-  { id: 'insurance',      label: 'Insurance & Payers',               icon: '🛡️' },
-  { id: 'business',       label: 'Healthcare Business & Finance',    icon: '💰' },
-  { id: 'public-health',  label: 'Public Health',                    icon: '🌍' },
-  { id: 'technology',     label: 'Healthcare Technology & AI',       icon: '🤖' },
-  { id: 'research',       label: 'Research & Clinical Developments', icon: '🔬' },
-  { id: 'mergers',        label: 'Mergers, Acquisitions & Expansion',icon: '🤝' },
-  { id: 'other',          label: 'Other Healthcare News',            icon: '📰' },
+  { id: 'hospitals',      label: 'Hospitals & Health Systems',       icon: Hospital },
+  { id: 'workforce',      label: 'Healthcare Workforce & Staffing',  icon: Users },
+  { id: 'nursing',        label: 'Nursing & Clinical Workforce',     icon: Pill },
+  { id: 'policy',         label: 'Healthcare Policy & Regulation',   icon: ClipboardList },
+  { id: 'insurance',      label: 'Insurance & Payers',               icon: ShieldCheck },
+  { id: 'business',       label: 'Healthcare Business & Finance',    icon: CircleDollarSign },
+  { id: 'public-health',  label: 'Public Health',                    icon: Globe },
+  { id: 'technology',     label: 'Healthcare Technology & AI',       icon: Bot },
+  { id: 'research',       label: 'Research & Clinical Developments', icon: Microscope },
+  { id: 'mergers',        label: 'Mergers, Acquisitions & Expansion',icon: Handshake },
+  { id: 'other',          label: 'Other Healthcare News',            icon: Newspaper },
 ];
 
 export const COUNTRIES = [
-  { id: 'all', label: 'All News' },
-  { id: 'US',  label: 'United States', flag: '🇺🇸' },
-  { id: 'CA',  label: 'Canada',        flag: '🇨🇦' },
+  { id: 'all', label: 'All News',      icon: Globe },
+  { id: 'US',  label: 'United States', icon: MapPin },
+  { id: 'CA',  label: 'Canada',        icon: MapPin },
 ];
 
 export const RECENCY_OPTIONS = [

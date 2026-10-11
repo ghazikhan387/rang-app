@@ -37,8 +37,8 @@
    BRAND MARK INVARIANT
    Logos are never filtered, tinted, inverted or blended by a theme — the
    wordmark carries the brand's own teal/purple/charcoal and stays that way.
-   Where a theme's surface would swallow it (the ink-black press footer) we
-   put a paper plate BEHIND the mark instead of recolouring it.
+   (The press footer shows the mark directly on ink with no plate, so the
+   footer reads as one uniform surface.)
 */
 .navbar__logo img,
 .masthead__logo,
@@ -783,6 +783,13 @@
 [data-theme='press'] .masthead__plate {
   padding-bottom: var(--space-6);
   border-bottom: 5px solid var(--t-rule);
+}
+
+/* Without the teaser strip (e.g. article pages) the plate rule would sit
+   directly on the ticker and read as a stray line, so it is omitted there. */
+[data-theme='press'] .masthead__plate--bare {
+  padding-bottom: var(--space-4);
+  border-bottom: 0;
 }
 
 [data-theme='press'] .masthead__tagline {
@@ -2931,13 +2938,14 @@
   border-top: 6px solid var(--t-ink);
 }
 
-/* The press footer sits on ink. Give the brand mark a paper plate instead of
-   recolouring it: the charcoal half of the lockup stays legible and the mark
-   keeps its own colours in every theme. */
+/* The press footer sits on ink. The brand mark sits directly on it with no
+   plate behind it, so the footer reads as one uniform surface. Note: the
+   charcoal 'Healthcare' line of the lockup is low-contrast on ink — if it
+   proves too faint, the fix is a reversed (white) logo asset, not a plate. */
 [data-theme='press'] .footer__logo {
   height: 56px;
-  padding: 10px 14px;
-  background: var(--t-paper);
+  padding: 0;
+  background: transparent;
 }
 
 [data-theme='press'] .footer__tagline,

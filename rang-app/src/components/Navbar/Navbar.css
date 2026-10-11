@@ -81,6 +81,9 @@
 }
 
 .navbar__country-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   padding: var(--space-1) var(--space-3);
   font-size: var(--font-size-xs);
   font-weight: 500;
@@ -185,6 +188,9 @@
   .navbar__mobile-menu .navbar__link {
     padding: var(--space-3) var(--space-4);
     font-size: var(--font-size-base);
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
 
   .navbar__mobile-menu .navbar__country-pills {

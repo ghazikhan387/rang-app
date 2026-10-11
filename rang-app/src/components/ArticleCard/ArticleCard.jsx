@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
+import { Newspaper } from 'lucide-react';
 import { CATEGORIES, IMPACT_STATUS } from '../../data/categories';
-import { formatRelativeTime, truncateText, getCountryFlag, getCountryName } from '../../utils/helpers';
+import { formatRelativeTime, truncateText, getCountryIcon, getCountryName } from '../../utils/helpers';
 import './ArticleCard.css';
 
 export default function ArticleCard({ article }) {
   const category = CATEGORIES.find((c) => c.id === article.primary_category);
+  const PlaceholderIcon = category?.icon || Newspaper;
+  const CountryIcon = getCountryIcon(article.country);
   const impact = article.summary?.impact_status
     ? IMPACT_STATUS[article.summary.impact_status]
     : null;
@@ -48,7 +51,7 @@ export default function ArticleCard({ article }) {
           style={article.image_url ? { display: 'none' } : {}}
           aria-hidden="true"
         >
-          {category?.icon || '📰'}
+          <PlaceholderIcon size={40} strokeWidth={1.5} />
         </div>
       </div>
 
@@ -57,7 +60,7 @@ export default function ArticleCard({ article }) {
         {/* Country & category */}
         <div className="article-card__meta-row">
           <span className="article-card__country-badge">
-            {getCountryFlag(article.country)} {getCountryName(article.country)}
+            <CountryIcon size={12} strokeWidth={2} aria-hidden="true" /> {getCountryName(article.country)}
           </span>
           <span className="article-card__meta-dot" />
           <span className="article-card__category-badge">

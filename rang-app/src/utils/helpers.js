@@ -1,6 +1,7 @@
 /**
  * Rang Healthcare — Utility functions
  */
+import { MapPin, Globe } from 'lucide-react';
 
 /**
  * Format a date relative to now (e.g., "2 hours ago", "3 days ago").
@@ -79,13 +80,16 @@ export function isWithinRecency(dateString, recencyId) {
 }
 
 /**
- * Get the country flag emoji.
+ * Get the Lucide icon component for a country.
+ * Returns a component (render as <Icon size={…} />), never an emoji.
  */
-export function getCountryFlag(country) {
+export function getCountryIcon(country) {
   switch (country) {
-    case 'US': return '🇺🇸';
-    case 'CA': return '🇨🇦';
-    default:   return '🌍';
+    case 'US':
+    case 'CA':
+      return MapPin;
+    default:
+      return Globe;
   }
 }
 

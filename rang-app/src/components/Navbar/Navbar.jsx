@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { COUNTRIES } from '../../data/categories';
 import SearchModal from '../SearchModal/SearchModal';
 import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
@@ -63,16 +64,20 @@ export default function Navbar({ selectedCountry, onCountryChange }) {
             </Link>
 
             <div className="navbar__country-pills" role="group" aria-label="Country filter">
-              {COUNTRIES.map((c) => (
+              {COUNTRIES.map((c) => {
+                const CountryIcon = c.icon;
+                return (
                 <button
                   key={c.id}
                   className={`navbar__country-pill ${selectedCountry === c.id ? 'active' : ''}`}
                   onClick={() => onCountryChange(c.id)}
                   aria-pressed={selectedCountry === c.id}
                 >
-                  {c.flag ? `${c.flag} ` : ''}{c.label}
+                  {CountryIcon && <CountryIcon size={12} strokeWidth={2} aria-hidden="true" />}
+                  {c.label}
                 </button>
-              ))}
+                );
+              })}
             </div>
 
             <button
@@ -124,19 +129,23 @@ export default function Navbar({ selectedCountry, onCountryChange }) {
             <ThemeSwitcher variant="menu" />
           </div>
           <div className="navbar__country-pills" role="group" aria-label="Country filter">
-            {COUNTRIES.map((c) => (
+            {COUNTRIES.map((c) => {
+              const CountryIcon = c.icon;
+              return (
               <button
                 key={c.id}
                 className={`navbar__country-pill ${selectedCountry === c.id ? 'active' : ''}`}
                 onClick={() => onCountryChange(c.id)}
                 aria-pressed={selectedCountry === c.id}
               >
-                {c.flag ? `${c.flag} ` : ''}{c.label}
+                {CountryIcon && <CountryIcon size={12} strokeWidth={2} aria-hidden="true" />}
+                {c.label}
               </button>
-            ))}
+              );
+            })}
           </div>
           <button className="navbar__link" onClick={() => { setSearchOpen(true); setMobileOpen(false); }}>
-            🔍 Search
+            <Search size={16} strokeWidth={2} aria-hidden="true" /> Search
           </button>
           <Link to="/about" className={`navbar__link ${location.pathname === '/about' ? 'active' : ''}`}>
             About

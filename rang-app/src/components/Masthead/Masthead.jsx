@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Newspaper } from 'lucide-react';
 import { CATEGORIES } from '../../data/categories';
 import { mockArticles } from '../../data/mockArticles';
 import { getPublishedArticles } from '../../services/newsService';
@@ -62,7 +63,7 @@ export default function Masthead() {
       </div>
 
       {/* Oversized brand plate: the real logo lockup, never recoloured */}
-      <div className="masthead__plate">
+      <div className={`masthead__plate${isHome ? '' : ' masthead__plate--bare'}`}>
         <Link to="/" className="masthead__wordmark" aria-label="Rang Healthcare — front page">
           <img
             className="masthead__logo"
@@ -86,11 +87,12 @@ export default function Masthead() {
         <ul className="masthead__teasers" aria-label="Front page teasers">
           {teasers.map((article) => {
             const category = categoryOf(article.primary_category);
+            const ThumbIcon = category?.icon || Newspaper;
             return (
               <li className="masthead__teaser" key={article.id}>
                 <Link to={`/article/${article.id}`} className="masthead__teaser-link">
                   <span className="masthead__teaser-thumb" aria-hidden="true">
-                    {category?.icon || '📰'}
+                    <ThumbIcon size={22} strokeWidth={1.75} />
                   </span>
                   <span className="masthead__teaser-text">
                     <span className="masthead__teaser-kicker">
