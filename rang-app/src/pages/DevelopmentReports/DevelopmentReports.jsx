@@ -26,6 +26,7 @@ import {
   triggerReportGeneration,
   PERIOD_TYPES,
 } from '../../services/developmentReportService';
+import ArchiveDropdown from './ArchiveDropdown';
 import './DevelopmentReports.css';
 
 export default function DevelopmentReports() {
@@ -170,18 +171,15 @@ export default function DevelopmentReports() {
                 <label htmlFor="month-select" className="archive-label">
                   Historical Archive:
                 </label>
-                <select
-                  id="month-select"
-                  className="archive-dropdown"
+                <ArchiveDropdown
+                  triggerId="month-select"
                   value={selectedMonthKey}
-                  onChange={(e) => setSelectedMonthKey(e.target.value)}
-                >
-                  {monthlyArchives.map((arch) => (
-                    <option key={arch.period_key} value={arch.period_key}>
-                      {arch.period_label || arch.period_key}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setSelectedMonthKey}
+                  options={monthlyArchives.map((arch) => ({
+                    value: arch.period_key,
+                    label: arch.period_label || arch.period_key,
+                  }))}
+                />
               </div>
             )}
           </div>

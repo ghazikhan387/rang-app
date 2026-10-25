@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Rang Healthcare — US Healthcare Monthly Report Edge Function
  * Automates research synthesis across 7 key US healthcare categories.
  * Produces evidence-grounded reports with clickable citations and staffing impacts.
@@ -88,15 +88,16 @@ Deno.serve(async (req: Request) => {
 
     const { data: periodArticles } = await supabase
       .from("articles")
-      .select("id, title, canonical_url, source_name, published_at, primary_category, is_major, retrieved_text, source_description")
+      .select("id, title, canonical_url, source_name, published_at, primary_category, is_major, retrieved_text, source_description, country")
       .gte("published_at", startDate.toISOString())
       .lt("published_at", endDate.toISOString())
       .eq("status", "published")
+      .eq("country", "US")
       .order("is_major", { ascending: false })
       .limit(40);
 
     const articleContext = (periodArticles || []).map((a: any, idx: number) => {
-      return `[Source ${idx + 1}] Title: ${a.title}\nCategory: ${a.primary_category}\nPublisher: ${a.source_name}\nURL: ${a.canonical_url}\nDate: ${a.published_at}\nExcerpt: ${(a.retrieved_text || a.source_description || "").slice(0, 300)}`;
+      return `[Source ${idx + 1}] Title: ${a.title}\nCategory: ${a.primary_category}\nPublisher: ${a.source_name}\nURL: ${a.canonical_url}\nDate: ${a.published_at}\nCountry: ${a.country || "US"}\nExcerpt: ${(a.retrieved_text || a.source_description || "").slice(0, 300)}`;
     }).join("\n\n");
 
     const apiKey = Deno.env.get("GEMINI_API_KEY");
@@ -107,7 +108,12 @@ Deno.serve(async (req: Request) => {
         const prompt = `You are the Chief Healthcare Analyst for Rang Healthcare Intelligence.
 Your task is to compile the authoritative Monthly US Healthcare News Intelligence Report for ${formatMonthName(reporting_period)}.
 
-Here is verified news coverage and developments collected for this month:
+STRICT GEOGRAPHIC BOUNDARY:
+- This report is EXCLUSIVELY for the UNITED STATES healthcare system.
+- Focus ONLY on US federal & state policies (CMS, FDA, FTC, HHS, OSHA), US health systems, and US healthcare staffing/compensation.
+- Do NOT include any Canadian news, Health Canada policies, provincial healthcare developments, or Canadian institutions.
+
+Here is verified US news coverage and developments collected for this month:
 ${articleContext || "Coverage represents national US healthcare regulatory filings, hospital developments, workforce changes, and clinical releases."}
 
 Produce a comprehensive, rigorous synthesis across the 7 mandatory industry categories:
@@ -122,6 +128,7 @@ Produce a comprehensive, rigorous synthesis across the 7 mandatory industry cate
 STRICT RULES:
 - Do NOT invent facts or statistics. Base all developments on verifiable developments.
 - Separate confirmed facts from proposals or speculative claims.
+- Strictly US healthcare developments only.
 - For each major development, provide a concise headline, event date, explanation, category, geographic scope, significance, and source citations.
 - Include a dedicated section on US Healthcare Staffing & Recruitment Impact (specifically addressing RN, LPN/LVN, CNA, and allied talent).
 - Include State and Regional developments.

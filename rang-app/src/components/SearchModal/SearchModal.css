@@ -8,6 +8,7 @@
   z-index: 200;
   background: rgba(10, 42, 58, 0.75);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -28,9 +29,17 @@
   width: 100%;
   max-width: 580px;
   margin: 0 var(--space-4);
-  overflow: hidden;
+  overflow: hidden; /* footer and rows follow the rounded corners */
   color: #ffffff;
   animation: slideUp var(--transition-base) ease-out;
+}
+
+/* Soft teal glow while the modal is focused — the shared focus indicator
+   for the row (the input itself has no visible box) */
+.search-modal:focus-within {
+  box-shadow:
+    0 0 0 1px rgba(20, 184, 166, 0.35),
+    0 20px 60px rgba(0, 0, 0, 0.45);
 }
 
 @keyframes slideUp {
@@ -41,8 +50,8 @@
 .search-modal__input-row {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4) var(--space-5);
+  gap: 12px;
+  padding: 18px 24px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   background: #0a2a3a;
 }
@@ -52,20 +61,70 @@
   flex-shrink: 0;
 }
 
+/* Spotlight/Linear-style input: blends into the row, no box of its own.
+   The global :focus-visible outline is overridden with higher specificity;
+   the teal glow on the modal (via :focus-within) is the focus indicator. */
 .search-modal__input {
+  width: 100%;
   flex: 1;
+  min-width: 0;
+  padding: 0;
   border: none;
   outline: none;
-  font-size: var(--font-size-md);
+  box-shadow: none;
+  background: transparent;
+  font-size: 17px;
+  font-weight: 400;
   font-family: var(--font-sans);
   color: #ffffff;
-  background: transparent;
+  caret-color: #14b8a6;
+}
+
+.search-modal__input:focus,
+.search-modal__input:focus-within,
+.search-modal__input:focus-visible {
+  outline: none;
+  border: none;
+  box-shadow: none;
 }
 
 .search-modal__input::placeholder {
-  color: var(--text-dark-muted);
+  color: rgba(255, 255, 255, 0.45);
 }
 
+/* Hide WebKit's built-in clear button on search inputs */
+.search-modal__input::-webkit-search-cancel-button,
+.search-modal__input[type='search']::-webkit-search-cancel-button {
+  display: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Top-right ESC pill */
+.search-modal__kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border-radius: 8px;
+  letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.search-modal__kbd:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+/* Results list */
 .search-modal__results {
   max-height: 400px;
   overflow-y: auto;
@@ -74,16 +133,27 @@
 
 .search-modal__result-item {
   display: block;
-  padding: 0.75rem 1.25rem;
+  padding: 12px 24px;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   color: var(--text-dark-secondary);
   text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all var(--transition-fast);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .search-modal__result-item:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
   color: #ffffff;
+}
+
+.search-modal__result-item.selected {
+  background: rgba(255, 255, 255, 0.04);
+  border-left-color: #14b8a6; /* teal marker on the active row */
+  color: #ffffff;
+}
+
+.search-modal__result-item:last-child {
+  border-bottom: none;
 }
 
 .search-modal__result-title {
@@ -96,4 +166,113 @@
 .search-modal__result-meta {
   font-size: 0.75rem;
   color: var(--strong-accent);
+}
+
+/* Empty / hint / error states */
+.search-modal__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 24px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.search-modal__empty p {
+  margin: 0;
+}
+
+.search-modal__empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: var(--strong-accent);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.search-modal__empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.search-modal__empty-detail {
+  max-width: 100%;
+  max-height: 140px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.4);
+  word-break: break-word;
+}
+
+/* ============================================================
+   Footer bar — keyboard hints (left) + branding (right)
+   ============================================================ */
+
+.search-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.search-modal__hints {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.search-modal__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.search-modal__hint-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Key-cap badges used inside the footer hints */
+.search-modal__key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.search-modal__brand {
+  margin-left: auto;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* Mobile: hints are useless without a keyboard */
+@media (max-width: 640px) {
+  .search-modal__hints {
+    display: none;
+  }
 }

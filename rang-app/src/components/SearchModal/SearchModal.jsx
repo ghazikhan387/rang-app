@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { getPublishedArticles } from '../../services/newsService';
 import { CATEGORIES } from '../../data/categories';
-import { formatRelativeTime, debounce } from '../../utils/helpers';
+import { formatRelativeTime } from '../../utils/helpers';
 import './SearchModal.css';
 
 export default function SearchModal({ onClose }) {
   const [query, setQuery] = useState('');
   const [articles, setArticles] = useState([]);
   const [searchError, setSearchError] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -28,12 +31,11 @@ export default function SearchModal({ onClose }) {
       if (isMounted) setSearchError(err?.message || 'Search index could not be loaded.');
     });
 
-    // Trap focus / close on outside click
+    // Close on outside click / prevent body scroll
     const handleClick = (e) => {
       if (e.target.classList.contains('search-modal__overlay')) onClose();
     };
     document.addEventListener('mousedown', handleClick);
-    // Prevent body scroll
     document.body.style.overflow = 'hidden';
     return () => {
       isMounted = false;
@@ -58,6 +60,52 @@ export default function SearchModal({ onClose }) {
   const getCategoryLabel = (id) =>
     CATEGORIES.find((c) => c.id === id)?.label || id;
 
+  // Reset the selection whenever the query changes
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [query]);
+
+  // Keyboard navigation: ESC closes, ↑↓ moves the selection, Enter opens.
+  // This is what the footer hints advertise, so it has to actually work.
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+        return;
+      }
+      if (!results.length) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex((i) => (i + 1) % results.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex((i) => (i <= 0 ? results.length - 1 : i - 1));
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const target = results[selectedIndex >= 0 ? selectedIndex : 0];
+        if (target) {
+          onClose();
+          navigate(`/article/${target.id}`);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [results, selectedIndex, onClose, navigate]);
+
+  // Keep the selected row visible while arrowing through results
+  useEffect(() => {
+    if (selectedIndex < 0) return;
+    document
+      .querySelector('.search-modal__result-item.selected')
+      ?.scrollIntoView({ block: 'nearest' });
+  }, [selectedIndex]);
+
+  const searchUnavailable = Boolean(searchError);
+  const showNoResults = query.trim() && !searchError && results.length === 0;
+  const showInitialHint = !query.trim() && !searchError;
+
   return (
     <div className="search-modal__overlay" role="dialog" aria-modal="true" aria-label="Search articles">
       <div className="search-modal">
@@ -70,50 +118,76 @@ export default function SearchModal({ onClose }) {
             placeholder="Search articles, publishers, topics…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search articles"
+            aria-label="Search articles, publishers, topics"
           />
-          <kbd className="search-modal__kbd" onClick={onClose} style={{ cursor: 'pointer' }}>ESC</kbd>
+          <kbd className="search-modal__kbd" onClick={onClose} title="Close search">ESC</kbd>
         </div>
 
         <div className="search-modal__results">
-          {searchError ? (
+          {searchUnavailable ? (
             <div className="search-modal__empty" role="alert">
-              <p style={{ fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-2)' }}>Search is unavailable.</p>
-              <p style={{ fontSize: 'var(--font-size-sm)', wordBreak: 'break-word' }}>{searchError}</p>
+              <span className="search-modal__empty-icon" aria-hidden="true">
+                <Search size={18} strokeWidth={2} />
+              </span>
+              <span className="search-modal__empty-title">Search is unavailable.</span>
+              <span className="search-modal__empty-detail">{searchError}</span>
             </div>
           ) : (
             <>
-          {query.trim() && results.length === 0 && (
-            <div className="search-modal__empty">
-              <p style={{ fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-2)' }}>No stories found</p>
-              <p>Try a broader term or different keyword.</p>
-            </div>
-          )}
-          {results.map((article) => (
-            <Link
-              key={article.id}
-              to={`/article/${article.id}`}
-              className="search-modal__result-item"
-              onClick={onClose}
-            >
-              <div className="search-modal__result-title">{article.title}</div>
-              <div className="search-modal__result-meta">
-                {article.source_name} · {formatRelativeTime(article.published_at)} · {getCategoryLabel(article.primary_category)}
-              </div>
-            </Link>
-          ))}
-          {!query.trim() && (
-            <div className="search-modal__empty">
-              <p>Start typing to search across articles, publishers, and topics.</p>
-            </div>
-          )}
+              {showNoResults && (
+                <div className="search-modal__empty">
+                  <span className="search-modal__empty-icon" aria-hidden="true">
+                    <Search size={18} strokeWidth={2} />
+                  </span>
+                  <span className="search-modal__empty-title">No results found</span>
+                  <span>Try a broader term or different keyword.</span>
+                </div>
+              )}
+
+              {results.map((article, index) => (
+                <Link
+                  key={article.id}
+                  to={`/article/${article.id}`}
+                  className={`search-modal__result-item ${
+                    index === selectedIndex ? 'selected' : ''
+                  }`}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                >
+                  <div className="search-modal__result-title">{article.title}</div>
+                  <div className="search-modal__result-meta">
+                    {article.source_name} · {formatRelativeTime(article.published_at)} · {getCategoryLabel(article.primary_category)}
+                  </div>
+                </Link>
+              ))}
+
+              {showInitialHint && (
+                <div className="search-modal__empty">
+                  <span className="search-modal__empty-icon" aria-hidden="true">
+                    <Search size={18} strokeWidth={2} />
+                  </span>
+                  <p>Start typing to search across articles, publishers, and topics.</p>
+                </div>
+              )}
             </>
           )}
         </div>
 
         <div className="search-modal__footer">
-          <span>↑↓ Navigate · ↵ Open · ESC Close</span>
-          <span>Rang Search</span>
+          <div className="search-modal__hints" aria-hidden="true">
+            <span className="search-modal__hint">
+              <kbd className="search-modal__key">↑↓</kbd>
+              <span className="search-modal__hint-label">Navigate</span>
+            </span>
+            <span className="search-modal__hint">
+              <kbd className="search-modal__key">↵</kbd>
+              <span className="search-modal__hint-label">Open</span>
+            </span>
+            <span className="search-modal__hint">
+              <kbd className="search-modal__key">ESC</kbd>
+              <span className="search-modal__hint-label">Close</span>
+            </span>
+          </div>
+          <span className="search-modal__brand">Rang Search</span>
         </div>
       </div>
     </div>

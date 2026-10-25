@@ -93,18 +93,19 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // 3. Gather published articles within the reporting period
+    // 3. Gather published US-only articles within the reporting period
     const { data: articles } = await supabase
       .from("articles")
-      .select("id, title, canonical_url, source_name, published_at, primary_category, is_major, retrieved_text, source_description")
+      .select("id, title, canonical_url, source_name, published_at, primary_category, is_major, retrieved_text, source_description, country")
       .gte("published_at", start.toISOString())
       .lte("published_at", end.toISOString())
       .eq("status", "published")
+      .eq("country", "US")
       .order("is_major", { ascending: false })
       .limit(40);
 
     const contextText = (articles || []).map((a: any, idx: number) => {
-      return `[Source ${idx + 1}] Title: ${a.title}\nPublisher: ${a.source_name}\nDate: ${a.published_at}\nURL: ${a.canonical_url}\nCategory: ${a.primary_category}\nExcerpt: ${(a.retrieved_text || a.source_description || "").slice(0, 300)}`;
+      return `[Source ${idx + 1}] Title: ${a.title}\nPublisher: ${a.source_name}\nDate: ${a.published_at}\nURL: ${a.canonical_url}\nCategory: ${a.primary_category}\nCountry: ${a.country || "US"}\nExcerpt: ${(a.retrieved_text || a.source_description || "").slice(0, 300)}`;
     }).join("\n\n");
 
     const apiKey = Deno.env.get("GEMINI_API_KEY");
@@ -115,7 +116,12 @@ Deno.serve(async (req: Request) => {
         const prompt = `You are the Chief Healthcare Analyst for Rang Healthcare Intelligence.
 Synthesize a single, coherent, authoritative US Healthcare Intelligence Briefing for ${label} (${title}).
 
-COLLECTED INDUSTRY COVERAGE:
+STRICT GEOGRAPHIC BOUNDARY:
+- This report is EXCLUSIVELY for the UNITED STATES healthcare system.
+- Focus ONLY on US federal & state policies (CMS, FDA, FTC, HHS, OSHA), US health systems, and US healthcare staffing/compensation.
+- Do NOT include any Canadian news, Health Canada policies, provincial healthcare developments, or Canadian institutions.
+
+COLLECTED US HEALTHCARE COVERAGE:
 ${contextText || "Coverage represents national US healthcare regulatory filings, hospital developments, workforce changes, and clinical releases."}
 
 REQUIREMENTS:
@@ -131,6 +137,7 @@ REQUIREMENTS:
 STRICT ACCURACY RULES:
 - Ground all facts in the collected coverage.
 - Do NOT fabricate claims, statistics, or quotations.
+- Strictly US developments only.
 
 Respond with ONLY valid JSON:
 {

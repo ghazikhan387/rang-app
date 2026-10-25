@@ -168,7 +168,10 @@
   z-index: 10;
 }
 
-.period-tabs {
+/* Scoped to this page — in the bundled SPA every stylesheet is global,
+   and an unscoped .period-tabs previously leaked onto the Healthcare
+   Reports page (light track + unreadable dark-theme pill text). */
+.ai-summaries-page .period-tabs {
   display: flex;
   background: #ffffff;
   padding: 0.35rem;
@@ -204,7 +207,7 @@
   box-shadow: 0 2px 6px rgba(1, 140, 155, 0.25);
 }
 
-.tab-icon {
+.ai-summaries-page .tab-icon {
   width: 14px;
   height: 14px;
 }
@@ -735,7 +738,7 @@
     flex-direction: column;
     align-items: stretch;
   }
-  .period-tabs {
+  .ai-summaries-page .period-tabs {
     overflow-x: auto;
   }
   .summaries-grid {
