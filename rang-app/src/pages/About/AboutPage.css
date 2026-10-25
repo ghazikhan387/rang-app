@@ -1,52 +1,72 @@
 /* ============================================================
-   About / Methodology Page Styles
+   Rang Healthcare — About / Methodology Page Stylesheet
+   Unified Midnight Design System
    ============================================================ */
 
 .about-page {
-  max-width: var(--content-width);
+  min-height: 100vh;
+  background-color: var(--color-bg-alt);
+  padding-bottom: var(--space-20);
+}
+
+/* ── Hero Banner ── */
+.about-hero-banner {
+  background: var(--gradient-midnight);
+  color: var(--color-text-on-dark);
+  padding: 3.5rem 1.5rem 3rem;
+  border-bottom: 1px solid var(--color-border-dark);
+}
+
+.about-hero-inner {
+  max-width: 860px;
   margin: 0 auto;
-  padding: var(--space-10) var(--space-6) var(--space-20);
-}
-
-.about-page__hero {
   text-align: center;
-  max-width: 760px;
-  margin: 0 auto var(--space-12);
 }
 
-.about-page__badge {
+.about-hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 16px;
+  gap: 0.5rem;
+  background: rgba(34, 184, 207, 0.15);
+  border: 1px solid rgba(34, 184, 207, 0.4);
+  color: var(--color-accent-strong);
+  padding: 0.35rem 0.95rem;
   border-radius: var(--radius-full);
-  background: var(--color-teal-light);
-  color: var(--color-teal);
   font-size: var(--font-size-xs);
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-transform: uppercase;
   margin-bottom: var(--space-4);
 }
 
-.about-page__title {
-  font-size: var(--font-size-4xl);
+.about-hero-title {
+  font-size: 2.5rem;
   font-weight: 800;
-  color: var(--color-charcoal);
-  line-height: 1.15;
+  line-height: 1.2;
+  color: #ffffff;
+  letter-spacing: -0.03em;
   margin-bottom: var(--space-4);
 }
 
-.about-page__subtitle {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
-  line-height: 1.6;
+.about-hero-subtitle {
+  font-size: 1.1rem;
+  color: var(--color-text-dark-secondary);
+  line-height: 1.65;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Content container */
+.about-content-container {
+  max-width: 860px;
+  margin: -1.5rem auto 0;
+  padding: 0 var(--space-6);
 }
 
 /* Sections */
 .about-section {
   background: var(--color-surface);
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   padding: var(--space-8);
   margin-bottom: var(--space-8);
@@ -74,23 +94,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .about-section__icon--purple {
-  background: var(--color-purple-light);
-  color: var(--color-purple);
+  background: #ede9fe;
+  color: #6d28d9;
 }
 
 .about-section__title {
   font-size: var(--font-size-xl);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--color-charcoal);
+  letter-spacing: -0.02em;
+  margin: 0;
 }
 
 .about-section__text {
   font-size: var(--font-size-base);
   line-height: 1.7;
-  color: var(--color-text);
+  color: var(--color-text-secondary);
   margin-bottom: var(--space-4);
 }
 
@@ -104,9 +127,16 @@
 
 .method-card {
   padding: var(--space-5);
-  background: var(--color-bg);
+  background: var(--color-bg-alt);
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.method-card:hover {
+  border-color: var(--color-teal);
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
 }
 
 .method-card__step {
@@ -133,56 +163,121 @@
 /* Recruiter Impact Matrix */
 .matrix-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: var(--space-4);
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: var(--space-5);
   font-size: var(--font-size-sm);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .matrix-table th,
 .matrix-table td {
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-5);
   text-align: left;
   border-bottom: 1px solid var(--color-border-light);
 }
 
-.matrix-table th {
-  background: var(--color-bg);
-  font-weight: 700;
-  color: var(--color-charcoal);
+.matrix-table tr:last-child td {
+  border-bottom: none;
 }
 
-.matrix-table tr:hover td {
-  background: rgba(1, 140, 155, 0.03);
+.matrix-table th {
+  background: var(--color-bg-alt);
+  font-weight: 700;
+  color: var(--color-charcoal);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.matrix-table td {
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.matrix-table td:first-child {
+  white-space: nowrap;
+}
+
+/* List */
+.about-list {
+  padding-left: 20px;
+  line-height: 1.8;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  margin-bottom: var(--space-6);
+}
+
+.about-list li {
+  margin-bottom: var(--space-2);
+}
+
+.about-list strong {
+  color: var(--color-charcoal);
 }
 
 /* Callout */
 .about-callout {
-  padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(1, 140, 155, 0.08) 0%, rgba(139, 43, 232, 0.08) 100%);
+  padding: var(--space-5) var(--space-6);
+  background: var(--color-teal-light);
+  border: 1px solid rgba(1, 140, 155, 0.25);
   border-left: 4px solid var(--color-teal);
-  margin-top: var(--space-8);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-6);
 }
 
 .about-callout__title {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   font-weight: 700;
   color: var(--color-charcoal);
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-1);
 }
 
 .about-callout__text {
   font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
   line-height: 1.6;
-  color: var(--color-text);
   margin: 0;
 }
 
+/* Footer action */
+.about-footer-action {
+  text-align: center;
+  margin-top: var(--space-10);
+}
+
+.about-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  background: var(--color-teal);
+  color: #ffffff;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(1, 140, 155, 0.25);
+}
+
+.about-cta-btn:hover {
+  background: var(--color-teal-dark);
+  box-shadow: 0 6px 16px rgba(1, 140, 155, 0.35);
+  transform: translateY(-1px);
+}
+
 @media (max-width: 768px) {
-  .about-page__title {
-    font-size: var(--font-size-2xl);
+  .about-hero-title {
+    font-size: 1.85rem;
+  }
+  .about-content-container {
+    margin-top: -1rem;
+    padding: 0 var(--space-4);
   }
   .about-section {
-    padding: var(--space-6);
+    padding: var(--space-5);
   }
 }

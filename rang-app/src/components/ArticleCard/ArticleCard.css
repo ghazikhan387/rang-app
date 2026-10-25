@@ -1,11 +1,12 @@
 /* ============================================================
-   ArticleCard Component Styles
+   Rang Healthcare — Unified Modern ArticleCard
    ============================================================ */
 
 .article-card {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
   overflow: hidden;
   transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
   display: flex;
@@ -13,50 +14,130 @@
 }
 
 .article-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--color-border);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-border-hover);
 }
 
 .article-card__image-wrapper {
   position: relative;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--color-teal-light) 0%, var(--color-purple-light) 100%);
+  background: linear-gradient(135deg, #0a2a3a 0%, #1e1b4b 100%);
 }
 
 .article-card__image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-slow);
+  transition: transform 0.35s ease;
 }
 
 .article-card:hover .article-card__image {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 
-/* Placeholder when no image */
-.article-card__image-placeholder {
+/* Full-bleed gradient fallback — fills the same 16/9 media area as article
+   images. Lives inside .article-card__image-wrapper, so it spans the card's
+   full width, touches the top/left/right edges, inherits the card's top
+   rounded corners (overflow: hidden), and lines up evenly with image rows. */
+.article-card__image-fallback {
   width: 100%;
   height: 100%;
+  position: relative;
+  overflow: hidden;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  gap: 12px;
+  text-align: center;
+  padding: 0 24px;
+  color: #ffffff;
+  /* Default: navy → teal */
+  background: linear-gradient(135deg, #0b3a5b 0%, #0e6b8c 55%, #14a3a8 100%);
+}
+
+/* One gradient per category — deep tone easing into its accent */
+.article-card__image-fallback[data-accent='hospitals']      { background: linear-gradient(135deg, #0a2a3a 0%, #0b5a6e 55%, #018c9b 100%); }
+.article-card__image-fallback[data-accent='workforce']     { background: linear-gradient(135deg, #0b2f4e 0%, #0e5f7e 55%, #0e9a9f 100%); }
+.article-card__image-fallback[data-accent='nursing']       { background: linear-gradient(135deg, #0b3a5b 0%, #0e5f8c 55%, #0284c7 100%); }
+.article-card__image-fallback[data-accent='policy']        { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #4f46e5 100%); }
+.article-card__image-fallback[data-accent='insurance']     { background: linear-gradient(135deg, #0b3a5b 0%, #0e6b8c 55%, #14a3a8 100%); }
+.article-card__image-fallback[data-accent='business']      { background: linear-gradient(135deg, #231f55 0%, #31278f 55%, #4338ca 100%); }
+.article-card__image-fallback[data-accent='public-health'] { background: linear-gradient(135deg, #06323b 0%, #0a5f57 55%, #0f9a8b 100%); }
+.article-card__image-fallback[data-accent='technology']    { background: linear-gradient(135deg, #1e1b4b 0%, #3b1e6e 55%, #7c3aed 100%); }
+.article-card__image-fallback[data-accent='research']      { background: linear-gradient(135deg, #3a2a10 0%, #7c4a12 55%, #b45309 100%); }
+.article-card__image-fallback[data-accent='mergers']       { background: linear-gradient(135deg, #2e1e4e 0%, #4c1d7a 55%, #7e22ce 100%); }
+.article-card__image-fallback[data-accent='other']         { background: linear-gradient(135deg, #1e293b 0%, #334155 55%, #64748b 100%); }
+
+/* Decorative layer: faint radial highlights */
+.article-card__image-fallback::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.18), transparent 50%),
+    radial-gradient(circle at 12% 88%, rgba(255, 255, 255, 0.08), transparent 45%);
+  pointer-events: none;
+}
+
+/* Decorative layer: low-opacity dot grid so the panel doesn't look empty */
+.article-card__image-fallback::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+  background-size: 18px 18px;
   opacity: 0.35;
-  background: linear-gradient(135deg, var(--color-teal-light) 0%, #E8F0FE 50%, var(--color-purple-light) 100%);
+  pointer-events: none;
+}
+
+/* Content sits above the decorative pseudo-layers */
+.article-card__fallback-icon,
+.article-card__fallback-category,
+.article-card__fallback-source {
+  position: relative;
+  z-index: 1;
+}
+
+/* Large frosted icon badge */
+.article-card__fallback-icon {
+  width: 72px;
+  height: 72px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.article-card__fallback-category {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: #ffffff;
+}
+
+.article-card__fallback-source {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .article-card__body {
   flex: 1;
-  padding: var(--space-5);
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-/* Meta row: country · category */
 .article-card__meta-row {
   display: flex;
   align-items: center;
@@ -68,142 +149,199 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: var(--font-size-xs);
+  font-size: 0.72rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--color-teal);
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-light);
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
 }
 
 .article-card__category-badge {
   display: inline-flex;
   align-items: center;
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  color: var(--color-text-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-teal);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--color-teal-bg);
+  padding: 2px 9px;
+  border-radius: var(--radius-full);
 }
 
+/* Small separator dot between text segments (e.g. "Source · 4 hours ago") */
 .article-card__meta-dot {
   width: 3px;
   height: 3px;
-  border-radius: 50%;
-  background: var(--color-text-muted);
+  border-radius: 999px;
+  background: #94a3b8;
   flex-shrink: 0;
 }
 
-/* Title */
 .article-card__title {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 750;
+  color: var(--color-text);
   line-height: 1.35;
-  color: var(--color-charcoal);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  letter-spacing: -0.01em;
 }
 
 .article-card__title a {
   color: inherit;
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 .article-card__title a:hover {
-  color: var(--color-teal);
+  color: var(--strong-accent-dark);
 }
 
-/* Source & date */
+.article-card__summary {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  flex: 1;
+}
+
+/* Source line: published-by · when (lighter time) */
 .article-card__source {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.775rem;
 }
 
 .article-card__source-name {
-  font-weight: 500;
-  color: var(--color-text-secondary);
+  font-weight: 700;
+  color: #475569;
 }
 
-/* Quick summary */
-.article-card__summary {
-  font-size: var(--font-size-sm);
-  line-height: 1.6;
-  color: var(--color-text-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.article-card__source time {
+  color: var(--color-text-muted);
 }
 
-/* Impact line */
+/* Press-release tag for wire/institutional sources */
+.article-card__press-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+/* Recruiter relevance line */
 .article-card__impact {
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-2);
-  font-size: var(--font-size-xs);
-  line-height: 1.5;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-bg);
-  border-radius: var(--radius-sm);
+  align-items: center;
+  gap: 8px;
 }
 
 .article-card__impact-dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: 999px;
   flex-shrink: 0;
-  margin-top: 4px;
-}
-
-.article-card__impact-text {
-  color: var(--color-text-secondary);
 }
 
 .article-card__impact-label {
+  font-size: 0.75rem;
   font-weight: 600;
+  color: var(--color-text-secondary);
 }
 
-/* CTA */
+/* Card action link pinned to the bottom of the body */
 .article-card__cta {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-light);
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  font-size: var(--font-size-sm);
-  font-weight: 600;
+  gap: 6px;
+  align-self: flex-start;
+  font-size: 0.8rem;
+  font-weight: 700;
   color: var(--color-teal);
-  text-decoration: none;
-  margin-top: auto;
-  padding-top: var(--space-2);
-  transition: gap var(--transition-fast);
+}
+
+.article-card__cta svg {
+  transition: transform var(--transition-fast);
 }
 
 .article-card__cta:hover {
-  gap: var(--space-2);
   color: var(--color-teal-dark);
 }
 
+.article-card__cta:hover svg {
+  transform: translateX(3px);
+}
+
 /* ============================================================
-   Skeleton Card
+   Skeleton loading state
    ============================================================ */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #e2e8f0;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
 
 .article-card-skeleton {
   background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border-light);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .article-card-skeleton__image {
   aspect-ratio: 16 / 9;
+  border-radius: 0;
 }
 
 .article-card-skeleton__body {
-  padding: var(--space-5);
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: 10px;
 }
 
 .article-card-skeleton__meta {
@@ -212,27 +350,28 @@
 }
 
 .article-card-skeleton__title {
-  width: 90%;
-  height: 22px;
+  width: 92%;
+  height: 16px;
 }
 
 .article-card-skeleton__title-2 {
-  width: 65%;
-  height: 22px;
+  width: 64%;
+  height: 16px;
 }
 
 .article-card-skeleton__text {
   width: 100%;
-  height: 14px;
+  height: 12px;
 }
 
 .article-card-skeleton__text-2 {
-  width: 80%;
-  height: 14px;
+  width: 78%;
+  height: 12px;
+  margin-bottom: 4px;
 }
 
 .article-card-skeleton__cta {
-  width: 30%;
-  height: 16px;
-  margin-top: var(--space-2);
+  width: 96px;
+  height: 14px;
+  margin-top: 8px;
 }

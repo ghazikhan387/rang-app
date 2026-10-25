@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, CalendarDays } from 'lucide-react';
+import { Search, FileText } from 'lucide-react';
 import { COUNTRIES } from '../../data/categories';
 import SearchModal from '../SearchModal/SearchModal';
-import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import './Navbar.css';
 
 export default function Navbar({ selectedCountry, onCountryChange }) {
@@ -45,6 +44,12 @@ export default function Navbar({ selectedCountry, onCountryChange }) {
     return () => window.removeEventListener('rang:open-search', openSearch);
   }, []);
 
+  const isReportsActive =
+    location.pathname === '/timeline' ||
+    location.pathname === '/reports' ||
+    location.pathname === '/healthcare-reports' ||
+    location.pathname === '/healthcare-news';
+
   return (
     <>
       <a href="#main-content" className="skip-link">Skip to main content</a>
@@ -65,25 +70,25 @@ export default function Navbar({ selectedCountry, onCountryChange }) {
 
             <Link
               to="/timeline"
-              className={`navbar__link ${location.pathname === '/timeline' ? 'active' : ''}`}
+              className={`navbar__link ${isReportsActive ? 'active' : ''}`}
             >
-              <CalendarDays size={16} strokeWidth={2} aria-hidden="true" />
-              Timeline
+              <FileText size={16} strokeWidth={2} aria-hidden="true" />
+              Healthcare Reports
             </Link>
 
             <div className="navbar__country-pills" role="group" aria-label="Country filter">
               {COUNTRIES.map((c) => {
                 const CountryIcon = c.icon;
                 return (
-                <button
-                  key={c.id}
-                  className={`navbar__country-pill ${selectedCountry === c.id ? 'active' : ''}`}
-                  onClick={() => onCountryChange(c.id)}
-                  aria-pressed={selectedCountry === c.id}
-                >
-                  {CountryIcon && <CountryIcon size={12} strokeWidth={2} aria-hidden="true" />}
-                  {c.label}
-                </button>
+                  <button
+                    key={c.id}
+                    className={`navbar__country-pill ${selectedCountry === c.id ? 'active' : ''}`}
+                    onClick={() => onCountryChange(c.id)}
+                    aria-pressed={selectedCountry === c.id}
+                  >
+                    {CountryIcon && <CountryIcon size={12} strokeWidth={2} aria-hidden="true" />}
+                    {c.label}
+                  </button>
                 );
               })}
             </div>
@@ -105,21 +110,18 @@ export default function Navbar({ selectedCountry, onCountryChange }) {
             </Link>
           </div>
 
-          {/* Reader theme switcher — segmented on desktop, icon button on mobile */}
           <div className="navbar__actions">
-            <ThemeSwitcher />
-
             <button
               className="navbar__mobile-toggle"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-expanded={mobileOpen}
               aria-label="Toggle navigation menu"
             >
-            {mobileOpen ? (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            ) : (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            )}
+              {mobileOpen ? (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              ) : (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+              )}
             </button>
           </div>
         </div>
@@ -128,30 +130,24 @@ export default function Navbar({ selectedCountry, onCountryChange }) {
           <Link to="/" className={`navbar__link ${location.pathname === '/' ? 'active' : ''}`}>
             News
           </Link>
-          <Link to="/timeline" className={`navbar__link ${location.pathname === '/timeline' ? 'active' : ''}`}>
-            Timeline
+          <Link to="/timeline" className={`navbar__link ${isReportsActive ? 'active' : ''}`}>
+            <FileText size={16} strokeWidth={2} style={{ display: 'inline', marginRight: '6px' }} />
+            Healthcare Reports
           </Link>
 
-          {/* Full, labelled theme choice for phone-sized screens */}
-          <div className="navbar__mobile-theme">
-            <span className="navbar__mobile-theme-label" id="mobile-theme-label">
-              Reader theme
-            </span>
-            <ThemeSwitcher variant="menu" />
-          </div>
           <div className="navbar__country-pills" role="group" aria-label="Country filter">
             {COUNTRIES.map((c) => {
               const CountryIcon = c.icon;
               return (
-              <button
-                key={c.id}
-                className={`navbar__country-pill ${selectedCountry === c.id ? 'active' : ''}`}
-                onClick={() => onCountryChange(c.id)}
-                aria-pressed={selectedCountry === c.id}
-              >
-                {CountryIcon && <CountryIcon size={12} strokeWidth={2} aria-hidden="true" />}
-                {c.label}
-              </button>
+                <button
+                  key={c.id}
+                  className={`navbar__country-pill ${selectedCountry === c.id ? 'active' : ''}`}
+                  onClick={() => onCountryChange(c.id)}
+                  aria-pressed={selectedCountry === c.id}
+                >
+                  {CountryIcon && <CountryIcon size={12} strokeWidth={2} aria-hidden="true" />}
+                  {c.label}
+                </button>
               );
             })}
           </div>

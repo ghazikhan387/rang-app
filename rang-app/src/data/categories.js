@@ -34,6 +34,37 @@ export const CATEGORIES = [
   { id: 'other',          label: 'Other Healthcare News',            icon: Newspaper },
 ];
 
+/**
+ * Recruiter view preset — the categories surfaced by default on the news
+ * feed. Clinical research and other specialist beats are excluded from the
+ * default view but stay available under "All topics" and the Categories
+ * dropdown.
+ *
+ * Mapping of the product brief to category ids:
+ * - Nursing & Clinical Workforce  -> nursing
+ * - Hiring & Staffing             -> workforce
+ * - Layoffs                       -> workforce (classified there by the AI pipeline)
+ * - Policy & Reimbursement        -> policy + insurance
+ * - Health System Business        -> hospitals + business
+ * - Workforce Data                -> workforce
+ * Explicitly OUT of the default view: research, technology, public-health,
+ * mergers, other.
+ */
+export const RECRUITER_CATEGORY_IDS = [
+  'nursing',
+  'workforce',
+  'policy',
+  'insurance',
+  'business',
+  'hospitals',
+];
+
+/* Categories ordered for filter UIs: recruiter priorities first, then the rest */
+export const CATEGORIES_RECRUITER_FIRST = [
+  ...RECRUITER_CATEGORY_IDS.map((id) => CATEGORIES.find((c) => c.id === id)),
+  ...CATEGORIES.filter((c) => !RECRUITER_CATEGORY_IDS.includes(c.id)),
+];
+
 export const COUNTRIES = [
   { id: 'all', label: 'All News',      icon: Globe },
   { id: 'US',  label: 'United States', icon: MapPin },
@@ -41,10 +72,13 @@ export const COUNTRIES = [
 ];
 
 export const RECENCY_OPTIONS = [
-  { id: 'latest',    label: 'Latest' },
-  { id: '24h',       label: 'Past 24 hours' },
-  { id: '7d',        label: 'Past 7 days' },
+  { id: 'all', label: 'All' },
+  { id: '24h', label: 'Past 24 hours' },
+  { id: '7d',  label: 'Past 7 days' },
 ];
+
+/* Default recency window for the news feed */
+export const DEFAULT_RECENCY = '24h';
 
 export const IMPACT_STATUS = {
   confirmed: {

@@ -1,7 +1,14 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { getPublishedArticles } from '../../services/newsService';
-import { isWithinRecency, formatRelativeTime, getCountryName } from '../../utils/helpers';
+import { RECRUITER_CATEGORY_IDS, DEFAULT_RECENCY } from '../../data/categories';
+import {
+  isWithinRecency,
+  formatRelativeTime,
+  getCountryName,
+  dedupeArticles,
+  compareArticlesForFeed,
+} from '../../utils/helpers';
 import Hero from '../../components/Hero/Hero';
 import FilterBar from '../../components/FilterBar/FilterBar';
 import ArticleCard, { ArticleCardSkeleton } from '../../components/ArticleCard/ArticleCard';
@@ -11,8 +18,9 @@ import './HomePage.css';
 export default function HomePage({ selectedCountry, onCountryChange }) {
   const [articles, setArticles] = useState([]);
   const [isLiveFeed, setIsLiveFeed] = useState(false);
+  const [viewMode, setViewMode] = useState('recruiter'); // 'recruiter' | 'all'
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedRecency, setSelectedRecency] = useState('latest');
+  const [selectedRecency, setSelectedRecency] = useState(DEFAULT_RECENCY);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,81 +54,72 @@ export default function HomePage({ selectedCountry, onCountryChange }) {
 
   const hasActiveFilters =
     selectedCategories.length > 0 ||
-    selectedRecency !== 'latest' ||
+    selectedRecency !== DEFAULT_RECENCY ||
     selectedCountry !== 'all';
 
+  /* Remove cross-source duplicates once, before any filtering */
+  const baseFeed = useMemo(() => dedupeArticles(articles), [articles]);
+
   const filteredArticles = useMemo(() => {
-    return articles
+    return baseFeed
       .filter((a) => {
         // Country
         if (selectedCountry !== 'all' && a.country !== selectedCountry) return false;
-        // Category
+        // View preset — recruiter view keeps only recruiter-priority categories
+        if (viewMode === 'recruiter' && !RECRUITER_CATEGORY_IDS.includes(a.primary_category)) return false;
+        // Multi-select category filter (applies inside the chosen view)
         if (selectedCategories.length > 0 && !selectedCategories.includes(a.primary_category)) return false;
         // Recency
         if (!isWithinRecency(a.published_at, selectedRecency)) return false;
         return true;
       })
-      .sort((a, b) => new Date(b.published_at) - new Date(a.published_at));
-  }, [articles, selectedCountry, selectedCategories, selectedRecency]);
+      .sort(compareArticlesForFeed); // reporting outranks press releases near in time
+  }, [baseFeed, selectedCountry, selectedCategories, selectedRecency, viewMode]);
 
   const clearAllFilters = () => {
     setSelectedCategories([]);
-    setSelectedRecency('latest');
+    setSelectedRecency(DEFAULT_RECENCY);
     onCountryChange('all');
   };
 
-  /* Presentation-only collection derived from the same data */
-  const leadingStories = useMemo(
-    () =>
-      [...articles]
-        .sort((a, b) => {
-          const rank = (article) => (article.summary?.impact_status === 'confirmed' ? 0 : 1);
-          const byImpact = rank(a) - rank(b);
-          if (byImpact !== 0) return byImpact;
-          return new Date(b.published_at) - new Date(a.published_at);
-        })
-        .slice(0, 5),
-    [articles]
-  );
+  /* Presentation-only collection: the top of the currently filtered feed,
+     ranked by confirmed impact first (same data, just re-ranked). */
+  const leadingStories = useMemo(() => {
+    return [...filteredArticles]
+      .sort((a, b) => {
+        const rank = (article) => (article.summary?.impact_status === 'confirmed' ? 0 : 1);
+        const byImpact = rank(a) - rank(b);
+        if (byImpact !== 0) return byImpact;
+        return new Date(b.published_at) - new Date(a.published_at);
+      })
+      .slice(0, 5);
+  }, [filteredArticles]);
 
   /* Date tab / section label used by the themed section heading (CSS ::before) */
   const monthLabel = new Date()
     .toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
     .toUpperCase();
 
-  const openSearch = () => {
-    window.dispatchEvent(new Event('rang:open-search'));
-  };
-
   return (
     <main id="main-content">
-      <Hero articleCount={articles.length} />
+      <Hero articleCount={baseFeed.length} />
 
       <div className="container">
-        {/* In-page search field — opens the existing search dialog */}
-        <div className="home-page__search">
-          <button
-            type="button"
-            className="site-search"
-            onClick={openSearch}
-            aria-label="Search for a story"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <span className="site-search__placeholder">Search for a story</span>
-            <span className="site-search__hint" aria-hidden="true">Ctrl K</span>
-          </button>
-        </div>
-
         {/* Feed header */}
         <div className="home-page__feed-header" data-month-label={monthLabel} data-section-index="01">
           <h2 className="home-page__feed-title">Latest healthcare news</h2>
           <span className="home-page__feed-count">
             {filteredArticles.length} {filteredArticles.length === 1 ? 'story' : 'stories'}
+            {viewMode === 'recruiter' && (
+              <span className="home-page__feed-view-tag"> · Recruiter view</span>
+            )}
           </span>
         </div>
 
         {/* Filter bar */}
         <FilterBar
+          viewMode={viewMode}
+          onViewChange={setViewMode}
           selectedCategories={selectedCategories}
           onCategoryChange={setSelectedCategories}
           selectedRecency={selectedRecency}

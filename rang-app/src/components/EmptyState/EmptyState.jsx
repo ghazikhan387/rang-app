@@ -5,8 +5,8 @@ export function EmptyState({ type = 'no-results', onAction }) {
   const configs = {
     'no-results': {
       icon: Search,
-      title: 'No stories found for that search.',
-      description: 'Try a broader term or clear one of your filters.',
+      title: 'No stories match these filters.',
+      description: 'Try clearing a filter, widening the date range, or switching to "All topics" to see everything.',
       actionLabel: 'Clear filters',
     },
     'no-stories': {

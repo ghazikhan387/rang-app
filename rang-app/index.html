@@ -1,46 +1,19 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="press">
+﻿<!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!--
-      Pre-paint theme boot: runs before any stylesheet is applied so the saved
-      theme is on <html> before first paint (no flash of the wrong theme).
-      Kept tiny and fail-safe: any storage error falls back to "press".
-    -->
-    <script>
-      (function () {
-        try {
-          var t = localStorage.getItem('rang-theme');
-          if (t !== 'press' && t !== 'parchment' && t !== 'modern') t = 'press';
-          document.documentElement.setAttribute('data-theme', t);
-        } catch (e) {
-          document.documentElement.setAttribute('data-theme', 'press');
-        }
-        document.documentElement.style.colorScheme = 'light';
-      })();
-    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Rang Healthcare — Healthcare news, clearly explained, with the context recruiters need. US and Canadian healthcare developments summarized daily." />
-    <meta name="color-scheme" content="light" />
-    <meta name="theme-color" content="#E4E4E1" />
+    <meta name="description" content="Rang Healthcare — Healthcare news intelligence, clearly explained with recruiter context. US and Canadian developments summarized daily." />
+    <meta name="theme-color" content="#0a2a3a" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!--
-      Fonts for the three themes (families listed alphabetically, as the
-      Google Fonts css2 API requires). `display=swap` prevents invisible text
-      while a face loads; every theme also declares local fallbacks.
-        Press     — Playfair Display 900, Oswald, Source Serif 4, Inter
-        Parchment — Playfair Display SC, Old Standard TT, Libre Caslon Text,
-                    Special Elite, Caveat
-        Modern    — Antonio, Inter
-    -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400;600&family=Caveat:wght@400;600&family=Inter:wght@400;500;600;700;800&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Oswald:wght@500;600;700&family=Playfair+Display:wght@700;900&family=Playfair+Display+SC:wght@700;900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Special+Elite&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <title>Rang Healthcare — Healthcare News Intelligence</title>

@@ -1,13 +1,13 @@
 /* ============================================================
-   SearchModal Component Styles
+   Rang Healthcare — Unified SearchModal
    ============================================================ */
 
 .search-modal__overlay {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
+  background: rgba(10, 42, 58, 0.75);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -21,13 +21,15 @@
 }
 
 .search-modal {
-  background: var(--color-surface);
+  background: #0f2a45;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   width: 100%;
   max-width: 580px;
   margin: 0 var(--space-4);
   overflow: hidden;
+  color: #ffffff;
   animation: slideUp var(--transition-base) ease-out;
 }
 
@@ -41,11 +43,12 @@
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-4) var(--space-5);
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: #0a2a3a;
 }
 
 .search-modal__input-row svg {
-  color: var(--color-text-muted);
+  color: var(--strong-accent);
   flex-shrink: 0;
 }
 
@@ -54,69 +57,43 @@
   border: none;
   outline: none;
   font-size: var(--font-size-md);
-  font-family: var(--font-family);
-  color: var(--color-text);
+  font-family: var(--font-sans);
+  color: #ffffff;
   background: transparent;
 }
 
 .search-modal__input::placeholder {
-  color: var(--color-text-muted);
-}
-
-.search-modal__kbd {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  background: var(--color-border-light);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-family: inherit;
+  color: var(--text-dark-muted);
 }
 
 .search-modal__results {
-  max-height: 340px;
+  max-height: 400px;
   overflow-y: auto;
   padding: var(--space-2) 0;
 }
 
 .search-modal__result-item {
   display: block;
-  padding: var(--space-3) var(--space-5);
+  padding: 0.75rem 1.25rem;
+  color: var(--text-dark-secondary);
   text-decoration: none;
-  color: var(--color-text);
-  transition: background var(--transition-fast);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all var(--transition-fast);
 }
 
-.search-modal__result-item:hover,
-.search-modal__result-item:focus {
-  background: var(--color-teal-light);
-  color: var(--color-text);
+.search-modal__result-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
 }
 
 .search-modal__result-title {
-  font-size: var(--font-size-sm);
+  font-size: 0.95rem;
   font-weight: 600;
-  line-height: 1.4;
-  margin-bottom: 2px;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
 }
 
 .search-modal__result-meta {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-}
-
-.search-modal__empty {
-  padding: var(--space-8) var(--space-5);
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-}
-
-.search-modal__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-2) var(--space-5);
-  border-top: 1px solid var(--color-border-light);
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  color: var(--strong-accent);
 }

@@ -1,3 +1,4 @@
+import { CATEGORIES } from '../../data/categories';
 import './Hero.css';
 
 export default function Hero({ articleCount }) {
@@ -21,7 +22,7 @@ export default function Hero({ articleCount }) {
             <span className="hero__stat-label">Countries</span>
           </div>
           <div className="hero__stat">
-            <span className="hero__stat-number">10</span>
+            <span className="hero__stat-number">{CATEGORIES.length}</span>
             <span className="hero__stat-label">Categories</span>
           </div>
         </div>

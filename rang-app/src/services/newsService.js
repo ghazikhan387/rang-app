@@ -72,7 +72,12 @@ function toFriendlyError(err, context = 'fetch articles') {
 }
 
 /**
- * Fetches all published articles with optional filters.
+ * Fetches ALL published articles, across as many paginated requests as needed.
+ * PostgREST (Supabase) caps every bare `.select()` at its max-rows setting
+ * (1000 by default), which previously made the feed display a hard query
+ * limit ("1000 stories") instead of the real total. This loops `.range()`
+ * calls until the feed is exhausted.
+ *
  * On any failure returns { articles: [], isLive: false, error } — never fake data.
  */
 export async function getPublishedArticles() {
@@ -81,25 +86,36 @@ export async function getPublishedArticles() {
     return { articles: [], isLive: false, error: `Feed unavailable: ${reason}` };
   }
 
-  try {
-    const { data, error } = await supabase
-      .from('published_articles')
-      .select('*')
-      .order('published_at', { ascending: false });
+  const PAGE_SIZE = 1000;
+  const MAX_PAGES = 20; // safety cap: 20,000 rows max
 
-    if (error) {
-      console.error('[newsService] Supabase query failed:', error);
-      return { articles: [], isLive: false, error: toFriendlyError(error, 'load the news feed') };
+  try {
+    let rows = [];
+    for (let page = 0; page < MAX_PAGES; page++) {
+      const { data, error } = await supabase
+        .from('published_articles')
+        .select('*')
+        .order('published_at', { ascending: false })
+        .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+
+      if (error) {
+        console.error('[newsService] Supabase query failed:', error);
+        return { articles: [], isLive: false, error: toFriendlyError(error, 'load the news feed') };
+      }
+
+      if (!data || data.length === 0) break;
+      rows = rows.concat(data);
+      if (data.length < PAGE_SIZE) break; // last, short page → feed exhausted
     }
 
     // Empty is a legitimate state (pipeline hasn't ingested anything yet) —
     // return no error so the UI shows an honest "no stories yet" empty state.
-    if (!data || data.length === 0) {
+    if (rows.length === 0) {
       console.warn('[newsService] Supabase returned 0 published articles. Pipeline may not have run yet.');
       return { articles: [], isLive: true, error: null };
     }
 
-    const mapped = data.map(mapRowToArticle);
+    const mapped = rows.map(mapRowToArticle);
     return { articles: mapped, isLive: true, error: null };
   } catch (err) {
     console.error('[newsService] Failed to fetch from Supabase:', err);

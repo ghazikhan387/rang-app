@@ -1,21 +1,21 @@
 /* ============================================================
-   Navbar Component Styles
+   Rang Healthcare — Unified Modern Navbar
    ============================================================ */
 
+/* Full-width white navbar — dark text for readability */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 100;
   height: var(--nav-height);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--color-border-light);
-  transition: box-shadow var(--transition-base);
+  background: #ffffff;
+  border-bottom: 1px solid var(--color-border);
+  transition: all var(--transition-base);
 }
 
 .navbar.scrolled {
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+  border-bottom-color: rgba(34, 184, 207, 0.35);
 }
 
 .navbar__inner {
@@ -28,29 +28,30 @@
   padding: 0 var(--space-6);
 }
 
+/* Logo sits directly on the white bar */
 .navbar__logo {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
   text-decoration: none;
 }
 
 .navbar__logo img {
-  height: 36px;
+  display: block;
+  height: 32px;
   width: auto;
 }
 
 .navbar__nav {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 0.5rem;
 }
 
 .navbar__link {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
   font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--color-text-secondary);
@@ -60,159 +61,124 @@
 }
 
 .navbar__link:hover {
-  color: var(--color-teal);
-  background: var(--color-teal-light);
+  color: var(--color-text);
+  background: rgba(15, 23, 42, 0.06);
 }
 
 .navbar__link.active {
-  color: var(--color-teal);
-  background: var(--color-teal-light);
+  color: var(--strong-accent-dark);
+  background: rgba(34, 184, 207, 0.12);
   font-weight: 600;
 }
 
-/* Country selector pills in navbar */
+/* Country filter pills */
 .navbar__country-pills {
   display: flex;
   align-items: center;
-  gap: 2px;
-  background: var(--color-border-light);
+  gap: 0.25rem;
+  background: var(--color-surface-subtle);
+  padding: 0.25rem;
   border-radius: var(--radius-full);
-  padding: 3px;
+  border: 1px solid var(--color-border);
+  margin: 0 0.5rem;
 }
 
 .navbar__country-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--font-size-xs);
-  font-weight: 500;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--color-text-secondary);
-  border-radius: var(--radius-full);
-  border: none;
   background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
   cursor: pointer;
   transition: all var(--transition-fast);
-  white-space: nowrap;
 }
 
 .navbar__country-pill:hover {
-  color: var(--color-teal);
+  color: var(--color-text);
 }
 
 .navbar__country-pill.active {
-  background: var(--color-surface);
-  color: var(--color-teal);
-  box-shadow: var(--shadow-xs);
-  font-weight: 600;
+  background: var(--strong-accent);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(34, 184, 207, 0.35);
 }
 
-/* Search trigger */
+/* Search button */
 .navbar__search-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 38px;
   height: 38px;
   border-radius: var(--radius-md);
+  background: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
   color: var(--color-text-secondary);
+  cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .navbar__search-btn:hover {
-  color: var(--color-teal);
-  background: var(--color-teal-light);
+  background: rgba(34, 184, 207, 0.12);
+  color: var(--strong-accent-dark);
+  border-color: var(--strong-accent);
 }
 
-/* Header actions: theme switcher + mobile menu toggle */
 .navbar__actions {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  flex-shrink: 0;
 }
 
-/* Mobile menu */
+/* Mobile Toggle */
 .navbar__mobile-toggle {
   display: none;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  padding: var(--space-2);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
 }
 
+.navbar__mobile-toggle:hover {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+/* Mobile Menu Drawer */
 .navbar__mobile-menu {
   display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-bottom: 1px solid var(--color-border);
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
 }
 
-@media (max-width: 768px) {
+.navbar__mobile-menu.open {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.navbar__mobile-menu .navbar__link {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+}
+
+@media (max-width: 860px) {
   .navbar__nav {
     display: none;
   }
-
   .navbar__mobile-toggle {
     display: flex;
-  }
-
-  .navbar__mobile-menu {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: var(--nav-height);
-    left: 0;
-    right: 0;
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    padding: var(--space-4) var(--space-6);
-    gap: var(--space-2);
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-100%);
-    opacity: 0;
-    pointer-events: none;
-    /* visibility keeps the closed panel out of the tab order and the
-       accessibility tree instead of only fading it away */
-    visibility: hidden;
-    transition: transform var(--transition-slow), opacity var(--transition-slow), visibility var(--transition-slow);
-    z-index: 99;
-  }
-
-  .navbar__mobile-menu.open {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-    visibility: visible;
-  }
-
-  .navbar__mobile-menu .navbar__link {
-    padding: var(--space-3) var(--space-4);
-    font-size: var(--font-size-base);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .navbar__mobile-menu .navbar__country-pills {
-    margin-top: var(--space-2);
-  }
-
-  /* Labelled theme row inside the menu — always an explicit 3-way choice */
-  .navbar__mobile-theme {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    margin-top: var(--space-3);
-    padding-top: var(--space-3);
-    border-top: 1px solid var(--color-border);
-  }
-
-  .navbar__mobile-theme-label {
-    font-family: var(--t-font-meta);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-text-muted);
   }
 }

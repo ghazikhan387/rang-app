@@ -1,13 +1,43 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Newspaper } from 'lucide-react';
 import { CATEGORIES, IMPACT_STATUS } from '../../data/categories';
-import { formatRelativeTime, truncateText, getCountryIcon, getCountryName } from '../../utils/helpers';
+import {
+  formatRelativeTime,
+  truncateText,
+  getCountryIcon,
+  getCountryName,
+  isPressReleaseSource,
+} from '../../utils/helpers';
 import './ArticleCard.css';
 
+const categoryLabel = (id) => CATEGORIES.find((c) => c.id === id)?.label || id;
+
+/* Full-bleed gradient fallback — fills the same 16/9 media area as article
+   images so every card in a row lines up. Content is centered over a
+   category-tied gradient with a faint highlight/dot pattern. */
+function CardMediaFallback({ article }) {
+  const FallbackIcon = CATEGORIES.find((c) => c.id === article.primary_category)?.icon || Newspaper;
+  return (
+    <div
+      className="article-card__image-fallback"
+      data-accent={article.primary_category}
+      aria-hidden="true"
+    >
+      <span className="article-card__fallback-icon">
+        <FallbackIcon size={32} strokeWidth={1.8} />
+      </span>
+      <span className="article-card__fallback-category">{categoryLabel(article.primary_category)}</span>
+      <span className="article-card__fallback-source">{article.source_name}</span>
+    </div>
+  );
+}
+
 export default function ArticleCard({ article }) {
-  const category = CATEGORIES.find((c) => c.id === article.primary_category);
-  const PlaceholderIcon = category?.icon || Newspaper;
+  const [imageFailed, setImageFailed] = useState(false);
+  const hasImage = Boolean(article.image_url) && !imageFailed;
   const CountryIcon = getCountryIcon(article.country);
+  const isPressRelease = isPressReleaseSource(article.source_name);
   const impact = article.summary?.impact_status
     ? IMPACT_STATUS[article.summary.impact_status]
     : null;
@@ -29,30 +59,22 @@ export default function ArticleCard({ article }) {
       data-day={day}
       data-month={month}
       data-weekday={weekday}
-      data-category={category?.label || article.primary_category}
+      data-category={categoryLabel(article.primary_category)}
       data-source={article.source_name}
     >
-      {/* Image area */}
+      {/* Media: the article image when available, otherwise a full-size gradient fallback */}
       <div className="article-card__image-wrapper">
-        {article.image_url ? (
+        {hasImage ? (
           <img
             className="article-card__image"
             src={article.image_url}
             alt=""
             loading="lazy"
-            onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'flex';
-            }}
+            onError={() => setImageFailed(true)}
           />
-        ) : null}
-        <div
-          className="article-card__image-placeholder"
-          style={article.image_url ? { display: 'none' } : {}}
-          aria-hidden="true"
-        >
-          <PlaceholderIcon size={40} strokeWidth={1.5} />
-        </div>
+        ) : (
+          <CardMediaFallback article={article} />
+        )}
       </div>
 
       {/* Card body */}
@@ -62,9 +84,9 @@ export default function ArticleCard({ article }) {
           <span className="article-card__country-badge">
             <CountryIcon size={12} strokeWidth={2} aria-hidden="true" /> {getCountryName(article.country)}
           </span>
-          <span className="article-card__meta-dot" />
+          <span className="article-card__meta-dot" aria-hidden="true" />
           <span className="article-card__category-badge">
-            {category?.label || article.primary_category}
+            {categoryLabel(article.primary_category)}
           </span>
         </div>
 
@@ -78,7 +100,8 @@ export default function ArticleCard({ article }) {
         {/* Source & date */}
         <div className="article-card__source">
           <span className="article-card__source-name">{article.source_name}</span>
-          <span className="article-card__meta-dot" />
+          {isPressRelease && <span className="article-card__press-badge">Press release</span>}
+          <span className="article-card__meta-dot" aria-hidden="true" />
           <time dateTime={article.published_at}>
             {formatRelativeTime(article.published_at)}
           </time>

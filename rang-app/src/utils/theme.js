@@ -1,94 +1,45 @@
 /**
- * Rang Healthcare — Theme plumbing
+ * Rang Healthcare — Single Modern Midnight Design System
  * ------------------------------------------------------------------
- * A single source of truth for the three reader themes. The theme is
- * expressed as `data-theme="press|parchment|modern"` on <html>; all
- * presentation differences are driven from CSS custom properties in
- * src/styles/theme.css.
+ * Single permanent visual theme across the entire application.
  */
 
 export const THEME_STORAGE_KEY = 'rang-theme';
-export const DEFAULT_THEME = 'press';
+export const DEFAULT_THEME = 'midnight';
 
 export const THEMES = [
   {
-    id: 'press',
-    label: 'Press',
-    description: 'Grey broadsheet, ink and rules',
-    metaColor: '#E4E4E1',
-  },
-  {
-    id: 'parchment',
-    label: 'Parchment',
-    description: 'Aged gazette on warm paper',
-    metaColor: '#E8D3AB',
-  },
-  {
-    id: 'modern',
-    label: 'Modern',
-    description: 'Contemporary editorial magazine',
-    metaColor: '#F3F3F1',
+    id: 'midnight',
+    label: 'Midnight',
+    description: 'Dark midnight teal-to-indigo unified modern design',
+    metaColor: '#0a2a3a',
   },
 ];
 
-export const THEME_IDS = THEMES.map((t) => t.id);
+export const THEME_IDS = ['midnight'];
 
-export function isThemeId(value) {
-  return typeof value === 'string' && THEME_IDS.includes(value);
+export function isThemeId() {
+  return true;
 }
 
-/** Read the persisted theme (safely — private mode can throw). */
 export function readStoredTheme() {
-  try {
-    const saved = localStorage.getItem(THEME_STORAGE_KEY);
-    return isThemeId(saved) ? saved : null;
-  } catch {
-    return null;
-  }
+  return DEFAULT_THEME;
 }
 
-/** Persist the theme choice. */
-export function storeTheme(themeId) {
-  try {
-    localStorage.setItem(THEME_STORAGE_KEY, themeId);
-  } catch {
-    /* storage unavailable — the theme still applies for this session */
-  }
-}
+export function storeTheme() {}
 
-/**
- * Initial theme for React state. The inline script in index.html has
- * already decided what to paint, so trust the DOM first and only fall
- * back to storage/defaults if it is missing or invalid.
- */
 export function resolveInitialTheme() {
-  if (typeof document !== 'undefined') {
-    const painted = document.documentElement.getAttribute('data-theme');
-    if (isThemeId(painted)) return painted;
-  }
-  return readStoredTheme() || DEFAULT_THEME;
+  return DEFAULT_THEME;
 }
 
-/** Apply a theme to the document (idempotent). */
-export function applyTheme(themeId) {
-  const next = isThemeId(themeId) ? themeId : DEFAULT_THEME;
-  const root = document.documentElement;
-  if (root.getAttribute('data-theme') !== next) {
-    root.setAttribute('data-theme', next);
-  }
-  const meta = document.querySelector('meta[name="theme-color"]');
-  const match = THEMES.find((t) => t.id === next);
-  if (meta && match) meta.setAttribute('content', match.metaColor);
-  return next;
+export function applyTheme() {
+  return DEFAULT_THEME;
 }
 
-/** Theme that follows the current one in the cycle order. */
-export function nextThemeId(currentId) {
-  const index = THEME_IDS.indexOf(isThemeId(currentId) ? currentId : DEFAULT_THEME);
-  return THEME_IDS[(index + 1) % THEME_IDS.length];
+export function nextThemeId() {
+  return DEFAULT_THEME;
 }
 
-/** Human label for a theme id. */
-export function themeLabel(themeId) {
-  return THEMES.find((t) => t.id === themeId)?.label || 'Press';
+export function themeLabel() {
+  return 'Midnight';
 }

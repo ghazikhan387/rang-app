@@ -1,87 +1,95 @@
 /* ============================================================
-   Hero Component Styles
+   Rang Healthcare — Unified Hero Component
+   Midnight Teal-to-Indigo Visual Identity
    ============================================================ */
 
 .hero {
-  padding: var(--space-12) 0 var(--space-6);
+  padding: 4.5rem 0 3.5rem;
   position: relative;
   overflow: hidden;
+  background: var(--gradient-midnight);
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hero__bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, var(--color-teal-bg) 0%, var(--color-bg) 50%, var(--color-purple-light) 100%);
-  opacity: 0.5;
-  z-index: -1;
+  display: none; /* Replaced with crisp gradient identity on hero */
 }
 
 .hero__content {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 var(--space-6);
+  position: relative;
+  z-index: 2;
 }
 
 .hero__title {
-  font-size: var(--font-size-3xl);
+  font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
-  color: var(--color-charcoal);
-  line-height: 1.2;
-  margin-bottom: var(--space-3);
+  color: var(--text-dark-primary);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin-bottom: var(--space-4);
+  max-width: 800px;
 }
 
 .hero__title-accent {
-  background: linear-gradient(135deg, var(--color-teal) 0%, var(--color-purple) 100%);
+  background: linear-gradient(135deg, #22b8cf 0%, #38bdf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .hero__subtitle {
-  font-size: var(--font-size-md);
-  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+  color: var(--text-dark-secondary);
   line-height: 1.6;
-  max-width: 540px;
+  max-width: 620px;
+  margin-bottom: 2.25rem;
 }
 
 .hero__stats {
   display: flex;
-  gap: var(--space-8);
-  margin-top: var(--space-8);
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 1rem 1.75rem;
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(8px);
+  width: fit-content;
 }
 
 .hero__stat {
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
 .hero__stat-number {
-  font-size: var(--font-size-2xl);
+  font-size: 1.65rem;
   font-weight: 800;
-  color: var(--color-teal);
+  color: var(--strong-accent);
+  line-height: 1;
+  font-feature-settings: 'tnum';
 }
 
 .hero__stat-label {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: var(--text-dark-muted);
+  margin-top: 0.3rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .hero {
-    padding: var(--space-8) 0 var(--space-4);
+    padding: 3rem 0 2rem;
   }
-
-  .hero__title {
-    font-size: var(--font-size-2xl);
-  }
-
   .hero__stats {
-    gap: var(--space-6);
+    width: 100%;
+    justify-content: space-between;
   }
 }
